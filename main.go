@@ -1,9 +1,11 @@
 package main
 
 import (
-	fetchsound "Takluz_TTS/fetchSound"
+	prefix "Takluz_TTS/audio/prefix"
+	audio "Takluz_TTS/audio/sound"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -18,7 +20,7 @@ func playSound(client *goobs.Client, inputName, filePath string) error {
 	// 	return err
 	// }
 	_, err := client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
-		"local_file": filePath, // Use "local_file" for Media Sources
+		"local_file": filePath,
 	}))
 	if err != nil {
 		return err
@@ -30,8 +32,20 @@ func playSound(client *goobs.Client, inputName, filePath string) error {
 }
 
 func main() {
+
+	// prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "xdd.mp3")
+	fmt.Println("done")
+	//เปลี่ยน Key
 	OPEN_API_KEY := os.Getenv("OPEN_API_KEY")
 	OBS_KEY := os.Getenv("OBS_KEY")
+	limitToken := 200
+	//
+
+	currentDir, err := os.Getwd()
+	if err != nil {
+		panic(err.Error())
+	}
+
 	client, err := goobs.New("localhost:4455", goobs.WithPassword(OBS_KEY))
 	if err != nil {
 		panic(err)
@@ -39,15 +53,6 @@ func main() {
 	defer client.Disconnect()
 
 	app := fiber.New()
-	app.Get("/", func(c *fiber.Ctx) error {
-		fmt.Println("GET SUCCESSFUL")
-		var message struct {
-			Message string `json:"message"`
-		}
-		message.Message = "hi"
-		go fetchsound.GetSound("พี่กิ้ฟครับ ทราบหรือไม่ว่า การกินไก่ทำให้ตัวใหญ่ขึ้น", OPEN_API_KEY)
-		return c.Status(200).JSON(message)
-	})
 	app.Post("/", func(c *fiber.Ctx) error {
 		var message struct {
 			Message string `json:"message"`
@@ -55,13 +60,22 @@ func main() {
 		if err := c.BodyParser(&message); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
-		fetchsound.GetSound(message.Message, OPEN_API_KEY)
-		err = playSound(client, "MediaSource", "F:/Project/Takluz/Takluz_TTS/output.mp3")
+
+		if len(message.Message) >= limitToken {
+			message.Message = message.Message[:limitToken]
+		}
+
+		audio.GetSound(message.Message, OPEN_API_KEY, "speech.mp3")
+		prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
+
+		outPath := filepath.Join(currentDir, "output.mp3")
+		outPath = filepath.ToSlash(outPath)
+		err = playSound(client, "Media Source", outPath)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("recieve post:", message)
-		return c.Status(200).JSON(message)
+		fmt.Println(len(message.Message), "characters:", message.Message)
+		return c.Status(200).SendString(message.Message)
 
 	})
 

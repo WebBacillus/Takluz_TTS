@@ -9,13 +9,14 @@ import (
 	"os"
 )
 
-func GetSound(message string, OPEN_API_KEY string) {
+func GetSound(message string, OPEN_API_KEY string, outputPath string) {
 
 	url := "https://api.openai.com/v1/audio/speech"
 	body := map[string]string{
-		"model": "tts-1",
+		"model": "tts-1-hd",
 		"input": message,
-		"voice": "alloy",
+		"speed": "0.8",   //เปลียนความเร็ว
+		"voice": "alloy", //เปลี่ยนเสียงคนพูด
 	}
 
 	jsonBody, err := json.Marshal(body)
@@ -31,7 +32,7 @@ func GetSound(message string, OPEN_API_KEY string) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+OPEN_API_KEY) // Replace YOUR_API_KEY with your actual API key
+	req.Header.Set("Authorization", "Bearer "+OPEN_API_KEY)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -46,7 +47,7 @@ func GetSound(message string, OPEN_API_KEY string) {
 		return
 	}
 
-	outFile, err := os.Create("output.mp3")
+	outFile, err := os.Create(outputPath)
 	if err != nil {
 		fmt.Println("Error creating file:", err)
 		return
@@ -59,5 +60,5 @@ func GetSound(message string, OPEN_API_KEY string) {
 		return
 	}
 
-	fmt.Println("MP3 file saved as output.mp3")
+	fmt.Println("MP3 file saved as", outputPath)
 }

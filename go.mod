@@ -1,15 +1,21 @@
 module Takluz_TTS
 
-go 1.24.0
+go 1.23
 
-require github.com/andreykaipov/goobs v1.5.4
+toolchain go1.24.0
+
+require (
+	github.com/andreykaipov/goobs v1.5.4
+	github.com/gofiber/fiber/v2 v2.52.6
+)
 
 require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
-	github.com/gofiber/fiber/v2 v2.52.6 // indirect
+	github.com/ebitengine/purego v0.4.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
+	github.com/hajimehoshi/oto/v2 v2.4.2 // indirect
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -19,6 +25,7 @@ require (
 	github.com/mmcloughlin/profile v0.1.1 // indirect
 	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/tosone/minimp3 v1.0.2 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
