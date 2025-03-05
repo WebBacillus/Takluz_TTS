@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>My Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        @keyframes bounceWave {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(0deg);
+            }
+        }
+        .name span, .message span {
+            display: inline-block;
+            animation: bounceWave 1s;
+            margin: 0; /* Remove margin */
+            padding: 0; /* Remove padding */
+        }
+        .name span {
+            margin-right: -25px;
+        }
+        .message span {
+            margin-right: -10px;
+        }
+        .name span {
+            animation-delay: calc(0.1s * var(--index));
+        }
+        .message span {
+            animation-delay: calc(0.1s * var(--index));
+        }
+        .name {
+            color: red;
+            font-size: 6em;
+            display: inline-block;
+            padding: 5px;
+            text-shadow: 
+                -1px -1px 0 #000,  
+                 1px -1px 0 #000,
+                -1px  1px 0 #000,
+                 1px  1px 0 #000; 
+        }
+        .message {
+            color: white;
+            font-size: 4em;
+            display: inline-block;
+            padding: 5px;
+            text-shadow: 
+                -1px -1px 0 #000,  
+                 1px -1px 0 #000,
+                -1px  1px 0 #000,
+                 1px  1px 0 #000; 
+        }
+    </style>
+</head>
+
+<body>
+    <div style="text-align: center;">
+        <img src="https://media.tenor.com/FYcn40o1ZYgAAAAj/zombie-bloody.gif" alt="Description of your GIF" style="width: 300px; height: auto;">  <!-- GIF Image -->
+    </div>
+    <div style="text-align: center;">
+        <p class="name">
+            
+                <span style="--index: 0;">W</span>
+            
+                <span style="--index: 1;">e</span>
+            
+                <span style="--index: 2;">b</span>
+            
+                <span style="--index: 3;">B</span>
+            
+                <span style="--index: 4;">a</span>
+            
+                <span style="--index: 5;">c</span>
+            
+                <span style="--index: 6;">i</span>
+            
+                <span style="--index: 7;">l</span>
+            
+                <span style="--index: 8;">l</span>
+            
+                <span style="--index: 9;">u</span>
+            
+                <span style="--index: 10;">s</span>
+            
+        </p>
+        <br>
+        <p class="message">
+            
+                <span style="--index: 0;">ไ</span>
+            
+                <span style="--index: 1;">ก</span>
+            
+                <span style="--index: 2;">่</span>
+            
+                <span style="--index: 3;"> </span>
+            
+                <span style="--index: 4;">ก</span>
+            
+                <span style="--index: 5;">า</span>
+            
+                <span style="--index: 6;"> </span>
+            
+                <span style="--index: 7;">ไ</span>
+            
+                <span style="--index: 8;">ก</span>
+            
+                <span style="--index: 9;">่</span>
+            
+                <span style="--index: 10;"> </span>
+            
+                <span style="--index: 11;">ก</span>
+            
+                <span style="--index: 12;">า</span>
+            
+                <span style="--index: 13;"> </span>
+            
+                <span style="--index: 14;">ไ</span>
+            
+                <span style="--index: 15;">ก</span>
+            
+                <span style="--index: 16;">่</span>
+            
+        </p>
+    </div>
+
+</body>
+
+</html>
