@@ -41,13 +41,13 @@ func playAnimation(client *goobs.Client, inputName, htmlDirectory string, userNa
 		Message:  message,
 	}
 
-	f, err := os.Create(htmlDirectory + "/print.html") //Create file named output.html
+	f, err := os.Create(htmlDirectory + "/print.html")
 	if err != nil {
 		log.Fatal("Error creating file:", err)
 	}
-	defer f.Close() // Ensure the file is closed, even if there's an error.
+	defer f.Close()
 
-	err = tmpl.Execute(f, data) //write to a file
+	err = tmpl.Execute(f, data)
 	if err != nil {
 		log.Fatal("Error writing to file:", err)
 	}
@@ -80,6 +80,7 @@ func playSound(client *goobs.Client, inputName, filePath string) error {
 	// if err != nil {
 	// 	return err
 	// }
+
 	_, err := client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
 		"local_file": filePath,
 	}))
@@ -92,18 +93,21 @@ func playSound(client *goobs.Client, inputName, filePath string) error {
 	return err
 }
 
+func getPath(nextPath string) string {
+	currentDir, err := os.Getwd()
+	if err != nil {
+		panic(err.Error())
+	}
+	newPath := filepath.Join(currentDir, nextPath)
+	return filepath.ToSlash(newPath)
+}
+
 func main() {
 
 	//เปลี่ยน Key
 	OPEN_API_KEY := os.Getenv("OPENAI_API_KEY")
 	OBS_KEY := os.Getenv("OBS_KEY")
 	limitToken := 200
-	//
-
-	currentDir, err := os.Getwd()
-	if err != nil {
-		panic(err.Error())
-	}
 
 	client, err := goobs.New("localhost:4455", goobs.WithPassword(OBS_KEY))
 	if err != nil {
@@ -111,9 +115,7 @@ func main() {
 	}
 	defer client.Disconnect()
 
-	htmlPath := filepath.Join(currentDir, "templates")
-	htmlPath = filepath.ToSlash(htmlPath)
-	err = playAnimation(client, "Browser", htmlPath, "WebBacillus", "Test Message")
+	err = playAnimation(client, "Browser", getPath("templates"), "WebBacillus", "Test Message")
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -132,16 +134,12 @@ func main() {
 		fetchsound.GetSound(message.Message, OPEN_API_KEY, "speech.mp3")
 		prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
 
-		outPath := filepath.Join(currentDir, "output.mp3")
-		outPath = filepath.ToSlash(outPath)
-		err = playSound(client, "Media Source", outPath)
+		err = playSound(client, "Media Source", getPath("output.mp3"))
 		if err != nil {
-			panic(err)
+			log.Println(err.Error())
 		}
 
-		htmlPath := filepath.Join(currentDir, "templates")
-		htmlPath = filepath.ToSlash(htmlPath)
-		err = playAnimation(client, "Browser", htmlPath, message.UserName, message.Message)
+		err = playAnimation(client, "Browser", getPath("templates"), message.UserName, message.Message)
 		if err != nil {
 			log.Println(err.Error())
 		}
