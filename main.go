@@ -24,9 +24,15 @@ type Message struct {
 }
 
 func playAnimation(client *goobs.Client, inputName, htmlDirectory string, userName string, message string) error {
-	// if len(message) >= 50 {
-	// 	message = message[:50] + "..."
+	if len(message) >= 300 {
+		message = message[:300] + " ..."
+	}
+
+	print(message)
+	// for i, rune := range message {
+	// 	fmt.Println(i, string(rune))
 	// }
+
 	funcMap := template.FuncMap{
 		"split": strings.Split,
 	}
@@ -115,7 +121,7 @@ func main() {
 	}
 	defer client.Disconnect()
 
-	err = playAnimation(client, "Browser", getPath("templates"), "WebBacillus", "Test Message")
+	err = playAnimation(client, "Browser", getPath("templates"), "WebBacillus", "กรรมาชนไทยแลนด์กาญจน์เทรนด์ซิมโฟนี เฟิร์มเกย์ฟินิกซ์แบนเนอร์ วีซ่าออร์เดอร์กรีน เกรย์ตรวจทานตรวจทานโค้ก ตอกย้ำสเก็ตช์ บัสกับดักระโงกบร็อคโคลี คันถธุระโนติสซานตาคลอสแจ๊กพอตแฮมเบอร์เกอร์ สุนทรีย์รอยัลตี้ บอยคอตต์ซาร์เปราะบาง แคนยอนสต๊อก วัจนะศึกษาศาสตร์สเก็ตช์สไตล์แล็บ ดีพาร์ตเมนท์มอบตัวโยเกิร์ตรอยัลตี้ โปรเจ็กเตอร์ผิดพลาดพรีเมียมเรตติ้ง มอนสเตอร์ ขั้นตอนโบกี้ แกรนด์เทวาสันทนาการคันยิมะกัน")
 	if err != nil {
 		log.Println(err.Error())
 	}
@@ -129,9 +135,11 @@ func main() {
 
 		if len(message.Message) >= limitToken {
 			message.Message = message.Message[:limitToken]
+
 		}
 
-		fetchsound.GetSound(message.Message, OPEN_API_KEY, "speech.mp3")
+		// fetchsound.GetSound(message.Message, OPEN_API_KEY, "speech.mp3")
+		fetchsound.GetSoundBotNoi(message.Message, OPEN_API_KEY, "speech.mp3")
 		prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
 
 		err = playSound(client, "Media Source", getPath("output.mp3"))

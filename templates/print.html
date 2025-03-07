@@ -7,6 +7,7 @@
         * {
             margin: 0;
             padding: 0;
+            font-family: "Kanit", sans-serif;
         }
         @keyframes bounceWave {
             0%, 100% {
@@ -16,17 +17,17 @@
                 transform: translateY(-10px) rotate(0deg);
             }
         }
-        .name span, .message span {
-            display: inline-block;
-            animation: bounceWave 1s;
+        .name span {
             margin: 0; /* Remove margin */
             padding: 0; /* Remove padding */
-        }
-        .name span {
             margin-right: -25px;
+            display: inline-block;
+            animation: bounceWave 2s;
         }
         .message span {
-            margin-right: -10px;
+            display: inline-block;
+            margin: 0; /* Remove margin */
+            padding: 0; /* Remove padding */
         }
         .name span {
             animation-delay: calc(0.1s * var(--index));
@@ -47,7 +48,7 @@
         }
         .message {
             color: white;
-            font-size: 4em;
+            font-size: 3em;
             display: inline-block;
             padding: 5px;
             text-shadow: 
@@ -55,10 +56,15 @@
                  1px -1px 0 #000,
                 -1px  1px 0 #000,
                  1px  1px 0 #000; 
+            position: relative;
+            max-width: 1200px;
+            overflow-wrap: break-word;
         }
     </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 </head>
-
 <body>
     <div style="text-align: center;">
         <img src="https://media.tenor.com/FYcn40o1ZYgAAAAj/zombie-bloody.gif" alt="Description of your GIF" style="width: 300px; height: auto;">  <!-- GIF Image -->
@@ -91,41 +97,7 @@
         </p>
         <br>
         <p class="message">
-            
-                <span style="--index: 0;">ไ</span>
-            
-                <span style="--index: 1;">ก</span>
-            
-                <span style="--index: 2;">่</span>
-            
-                <span style="--index: 3;"> </span>
-            
-                <span style="--index: 4;">ก</span>
-            
-                <span style="--index: 5;">า</span>
-            
-                <span style="--index: 6;"> </span>
-            
-                <span style="--index: 7;">ไ</span>
-            
-                <span style="--index: 8;">ก</span>
-            
-                <span style="--index: 9;">่</span>
-            
-                <span style="--index: 10;"> </span>
-            
-                <span style="--index: 11;">ก</span>
-            
-                <span style="--index: 12;">า</span>
-            
-                <span style="--index: 13;"> </span>
-            
-                <span style="--index: 14;">ไ</span>
-            
-                <span style="--index: 15;">ก</span>
-            
-                <span style="--index: 16;">่</span>
-            
+            <span>พี่กิ้ฟครับ วันนี้ออกกำลังกายเหนื่อยไหมครับ</span>
         </p>
     </div>
 
