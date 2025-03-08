@@ -3,6 +3,8 @@ package fetchsound
 import (
 	myInterface "Takluz_TTS/myInterface"
 	"bytes"
+	"compress/gzip"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -142,4 +144,96 @@ func GetSoundBotNoi(message string, BOT_NOI_Config myInterface.BOT_NOI_Config, o
 	}
 
 	fmt.Println("MP3 file saved as", outputPath)
+}
+
+func GetSoundResemble(message string, Resemble_Config myInterface.Resemble_Config, outputPath string) bool {
+	url := "https://f.cluster.resemble.ai/synthesize"
+	body := map[string]any{
+		"voice_uuid":    Resemble_Config.VoiceUUID,
+		"data":          message,
+		"sample_rate":   Resemble_Config.SampleRate,
+		"output_format": Resemble_Config.OutputFormat,
+	}
+
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		fmt.Println("Error marshalling JSON:", err)
+		return false
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		fmt.Println("Error creating request:", err)
+		return false
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+Resemble_Config.Key)
+	req.Header.Set("Accept-Encoding", "gzip")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("Error making request:", err)
+		return false
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println("Error: received non-200 response code:", resp.StatusCode)
+		return false
+	}
+
+	var reader io.ReadCloser
+	switch resp.Header.Get("Content-Encoding") {
+	case "gzip":
+		reader, err = gzip.NewReader(resp.Body)
+		if err != nil {
+			fmt.Println("Error creating gzip reader:", err)
+			return false
+		}
+		defer reader.Close()
+	default:
+		reader = resp.Body
+	}
+
+	var responseData map[string]interface{}
+	err = json.NewDecoder(reader).Decode(&responseData)
+	if err != nil {
+		fmt.Println("Error decoding JSON response:", err)
+		return false
+	}
+
+	if success, ok := responseData["success"].(bool); ok && success {
+		audioContent, ok := responseData["audio_content"].(string)
+		if !ok {
+			fmt.Println("Error: 'audio_content' not found in the response.")
+			return false
+		}
+
+		audioBytes, err := base64.StdEncoding.DecodeString(audioContent)
+		if err != nil {
+			fmt.Println("Error: Invalid base64 data in audio_content.")
+			return false
+		}
+
+		outFile, err := os.Create(outputPath)
+		if err != nil {
+			fmt.Println("Error creating file:", err)
+			return false
+		}
+		defer outFile.Close()
+
+		_, err = outFile.Write(audioBytes)
+		if err != nil {
+			fmt.Println("Error saving audio to file:", err)
+			return false
+		}
+
+		fmt.Println("Audio saved to", outputPath)
+		return true
+	} else {
+		fmt.Printf("Error: Resemble API returned success=false. Issues: %v\n", responseData["issues"])
+		return false
+	}
 }

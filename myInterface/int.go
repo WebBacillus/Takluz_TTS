@@ -28,3 +28,11 @@ type BOT_NOI_Config struct {
 	SaveFile  bool    `json:"save_file"`
 	Language  string  `json:"language"`
 }
+
+type Resemble_Config struct {
+	Key          string `json:"key"`
+	VoiceUUID    string `json:"voice_uuid"`
+	SampleRate   int    `json:"sample_rate"`
+	OutputFormat string `json:"output_format"`
+	Speed        string `json:"speed"`
+}

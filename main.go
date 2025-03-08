@@ -141,8 +141,17 @@ func main() {
 		Language:  viper.GetString("BOT_NOI.LANGUAGE"),
 	}
 
-	AI := viper.GetString("AI")
+	//init Resemble
+	Resemble_config := myInterface.Resemble_Config{
+		Key:          viper.GetString("RESEMBLE.KEY"),
+		VoiceUUID:    viper.GetString("RESEMBLE.VOICE_UUID"),
+		SampleRate:   viper.GetInt("RESEMBLE.SAMPLE_RATE"),
+		OutputFormat: viper.GetString("RESEMBLE.OUTPUT_FORMAT"),
+		Speed:        viper.GetString("RESEMBLE.SPEED"),
+	}
+	// fmt.Println(Resemble_config)
 
+	AI := viper.GetString("AI")
 	limitToken := viper.GetInt("LIMIT")
 
 	client, err := goobs.New(OBS_Config.URL, goobs.WithPassword(OBS_Config.Key))
@@ -150,11 +159,6 @@ func main() {
 		panic(err)
 	}
 	defer client.Disconnect()
-
-	// err = playAnimation(client, OBS_Config.Browser, getPath("templates"), "WebBacillus", "กรรมาชนไทยแลนด์กาญจน์เทรนด์ซิมโฟนี เฟิร์มเกย์ฟินิกซ์แบนเนอร์ วีซ่าออร์เดอร์กรีน เกรย์ตรวจทานตรวจทานโค้ก ตอกย้ำสเก็ตช์ บัสกับดักระโงกบร็อคโคลี คันถธุระโนติสซานตาคลอสแจ๊กพอตแฮมเบอร์เกอร์ สุนทรีย์รอยัลตี้ บอยคอตต์ซาร์เปราะบาง แคนยอนสต๊อก วัจนะศึกษาศาสตร์สเก็ตช์สไตล์แล็บ ดีพาร์ตเมนท์มอบตัวโยเกิร์ตรอยัลตี้ โปรเจ็กเตอร์ผิดพลาดพรีเมียมเรตติ้ง มอนสเตอร์ ขั้นตอนโบกี้ แกรนด์เทวาสันทนาการคันยิมะกัน")
-	// if err != nil {
-	// 	log.Println(err.Error())
-	// }
 
 	app := fiber.New()
 	app.Post("/", func(c *fiber.Ctx) error {
@@ -172,6 +176,19 @@ func main() {
 			fetchsound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.mp3")
 		} else if AI == "OPEN_AI" {
 			fetchsound.GetSound(message.Message, Open_AI_Config, "speech.mp3")
+		} else if AI == "RESEMBLE" {
+			text := fmt.Sprintf(`<speak>
+				<voice name="0f2f9a7e" uuid="%s">
+					<prosody rate="%s">
+						<lang xml:lang="th-th">
+							%s
+						</lang>
+					</prosody>
+				</voice>
+			</speak>`, Resemble_config.VoiceUUID, Resemble_config.Speed, message.Message)
+			fetchsound.GetSoundResemble(text, Resemble_config, "speech.mp3")
+		} else {
+			return c.Status(400).JSON(fiber.Map{"error": "Invalid AI configuration"})
 		}
 
 		// prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
