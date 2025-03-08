@@ -1,8 +1,8 @@
 package main
 
 import (
-	"Takluz_TTS/audio/prefix"
 	fetchsound "Takluz_TTS/audio/sound"
+	myInterface "Takluz_TTS/myInterface"
 	"fmt"
 	"log"
 	"os"
@@ -12,23 +12,19 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/spf13/viper"
 
 	"github.com/andreykaipov/goobs"
 	"github.com/andreykaipov/goobs/api/requests/inputs"
 	"github.com/andreykaipov/goobs/api/requests/mediainputs"
 )
 
-type Message struct {
-	UserName string `json:"userName"`
-	Message  string `json:"message"`
-}
-
 func playAnimation(client *goobs.Client, inputName, htmlDirectory string, userName string, message string) error {
 	if len(message) >= 300 {
 		message = message[:300] + " ..."
 	}
 
-	print(message)
+	// print(message)
 	// for i, rune := range message {
 	// 	fmt.Println(i, string(rune))
 	// }
@@ -109,26 +105,60 @@ func getPath(nextPath string) string {
 }
 
 func main() {
+	viper.SetConfigName("config")
+	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("fatal error config file: %s", err))
+	}
 
-	//เปลี่ยน Key
-	OPEN_API_KEY := os.Getenv("OPENAI_API_KEY")
-	OBS_KEY := os.Getenv("OBS_KEY")
-	limitToken := 200
+	//init OPEN_API
+	Open_AI_Config := myInterface.Open_AI_Config{
+		Key:   viper.GetString("OPEN_AI.KEY"),
+		Model: viper.GetString("OPEN_AI.MODEL"),
+		Speed: viper.GetString("OPEN_AI.SPEED"),
+		Voice: viper.GetString("OPEN_AI.VOICE"),
+	}
 
-	client, err := goobs.New("localhost:4455", goobs.WithPassword(OBS_KEY))
+	//init OBS
+	OBS_Config := myInterface.OBS_Config{
+		URL:     viper.GetString("OBS.URL"),
+		Key:     viper.GetString("OBS.KEY"),
+		Browser: viper.GetString("OBS.BROWSER"),
+		Media:   viper.GetString("OBS.MEDIA"),
+	}
+
+	//init BOT_NOI
+	BOT_NOI_Config := myInterface.BOT_NOI_Config{
+		Key:       viper.GetString("BOT_NOI.KEY"),
+		Speaker:   viper.GetString("BOT_NOI.SPEAKER"),
+		Volume:    viper.GetFloat64("BOT_NOI.VOLUME"),
+		Speed:     viper.GetFloat64("BOT_NOI.SPEED"),
+		TypeMedia: viper.GetString("BOT_NOI.TYPE_MEDIA"),
+		SaveFile:  viper.GetBool("BOT_NOI.SAVE_FILE"),
+		Language:  viper.GetString("BOT_NOI.LANGUAGE"),
+	}
+
+	AI := viper.GetString("AI")
+
+	limitToken := viper.GetInt("LIMIT")
+
+	client, err := goobs.New(OBS_Config.URL, goobs.WithPassword(OBS_Config.Key))
 	if err != nil {
 		panic(err)
 	}
 	defer client.Disconnect()
 
-	err = playAnimation(client, "Browser", getPath("templates"), "WebBacillus", "กรรมาชนไทยแลนด์กาญจน์เทรนด์ซิมโฟนี เฟิร์มเกย์ฟินิกซ์แบนเนอร์ วีซ่าออร์เดอร์กรีน เกรย์ตรวจทานตรวจทานโค้ก ตอกย้ำสเก็ตช์ บัสกับดักระโงกบร็อคโคลี คันถธุระโนติสซานตาคลอสแจ๊กพอตแฮมเบอร์เกอร์ สุนทรีย์รอยัลตี้ บอยคอตต์ซาร์เปราะบาง แคนยอนสต๊อก วัจนะศึกษาศาสตร์สเก็ตช์สไตล์แล็บ ดีพาร์ตเมนท์มอบตัวโยเกิร์ตรอยัลตี้ โปรเจ็กเตอร์ผิดพลาดพรีเมียมเรตติ้ง มอนสเตอร์ ขั้นตอนโบกี้ แกรนด์เทวาสันทนาการคันยิมะกัน")
-	if err != nil {
-		log.Println(err.Error())
-	}
+	// err = playAnimation(client, OBS_Config.Browser, getPath("templates"), "WebBacillus", "กรรมาชนไทยแลนด์กาญจน์เทรนด์ซิมโฟนี เฟิร์มเกย์ฟินิกซ์แบนเนอร์ วีซ่าออร์เดอร์กรีน เกรย์ตรวจทานตรวจทานโค้ก ตอกย้ำสเก็ตช์ บัสกับดักระโงกบร็อคโคลี คันถธุระโนติสซานตาคลอสแจ๊กพอตแฮมเบอร์เกอร์ สุนทรีย์รอยัลตี้ บอยคอตต์ซาร์เปราะบาง แคนยอนสต๊อก วัจนะศึกษาศาสตร์สเก็ตช์สไตล์แล็บ ดีพาร์ตเมนท์มอบตัวโยเกิร์ตรอยัลตี้ โปรเจ็กเตอร์ผิดพลาดพรีเมียมเรตติ้ง มอนสเตอร์ ขั้นตอนโบกี้ แกรนด์เทวาสันทนาการคันยิมะกัน")
+	// if err != nil {
+	// 	log.Println(err.Error())
+	// }
 
 	app := fiber.New()
 	app.Post("/", func(c *fiber.Ctx) error {
-		var message Message
+		var message myInterface.Message
 		if err := c.BodyParser(&message); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
@@ -138,19 +168,23 @@ func main() {
 
 		}
 
-		// fetchsound.GetSound(message.Message, OPEN_API_KEY, "speech.mp3")
-		fetchsound.GetSoundBotNoi(message.Message, OPEN_API_KEY, "speech.mp3")
-		prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
+		if AI == "BOT_NOI" {
+			fetchsound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.mp3")
+		} else if AI == "OPEN_AI" {
+			fetchsound.GetSound(message.Message, Open_AI_Config, "speech.mp3")
+		}
 
-		err = playSound(client, "Media Source", getPath("output.mp3"))
+		// prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
+
+		err = playSound(client, OBS_Config.Media, getPath("speech.mp3"))
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		err = playAnimation(client, "Browser", getPath("templates"), message.UserName, message.Message)
-		if err != nil {
-			log.Println(err.Error())
-		}
+		// err = playAnimation(client, OBS_Config.Browser, getPath("templates"), message.UserName, message.Message)
+		// if err != nil {
+		// 	log.Println(err.Error())
+		// }
 		fmt.Println(message.UserName, "used", len(message.Message), "characters", message.Message)
 		return c.Status(200).SendString(message.Message)
 

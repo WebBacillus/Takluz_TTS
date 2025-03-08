@@ -1,6 +1,7 @@
 package fetchsound
 
 import (
+	myInterface "Takluz_TTS/myInterface"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -9,14 +10,13 @@ import (
 	"os"
 )
 
-func GetSound(message string, OPEN_API_KEY string, outputPath string) {
-
+func GetSound(message string, Open_AI_Config myInterface.Open_AI_Config, outputPath string) {
 	url := "https://api.openai.com/v1/audio/speech"
 	body := map[string]string{
-		"model": "tts-1-hd",
+		"model": Open_AI_Config.Model,
 		"input": message,
-		"speed": "0.8",   //เปลียนความเร็ว
-		"voice": "alloy", //เปลี่ยนเสียงคนพูด
+		"speed": Open_AI_Config.Speed,
+		"voice": Open_AI_Config.Voice,
 	}
 
 	jsonBody, err := json.Marshal(body)
@@ -32,7 +32,7 @@ func GetSound(message string, OPEN_API_KEY string, outputPath string) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+OPEN_API_KEY)
+	req.Header.Set("Authorization", "Bearer "+Open_AI_Config.Key)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -63,16 +63,16 @@ func GetSound(message string, OPEN_API_KEY string, outputPath string) {
 	fmt.Println("MP3 file saved as", outputPath)
 }
 
-func GetSoundBotNoi(message string, OPEN_API_KEY string, outputPath string) {
+func GetSoundBotNoi(message string, BOT_NOI_Config myInterface.BOT_NOI_Config, outputPath string) {
 	url := "https://api-voice.botnoi.ai/openapi/v1/generate_audio"
 	body := map[string]any{
 		"text":       message,
-		"speaker":    "8",
-		"volume":     0.8,
-		"speed":      0.8,
-		"type_media": "mp3",
-		"save_file":  true,
-		"language":   "th",
+		"speaker":    BOT_NOI_Config.Speaker,
+		"volume":     BOT_NOI_Config.Volume,
+		"speed":      BOT_NOI_Config.Speed,
+		"type_media": BOT_NOI_Config.TypeMedia,
+		"save_file":  BOT_NOI_Config.SaveFile,
+		"language":   BOT_NOI_Config.Language,
 	}
 
 	jsonBody, err := json.Marshal(body)
@@ -88,7 +88,7 @@ func GetSoundBotNoi(message string, OPEN_API_KEY string, outputPath string) {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Botnoi-Token", "WWVQcHVjb1pHRFB2OEFCa2ZOMlVHU24xQ2hWMjU2MTg5NA==")
+	req.Header.Set("Botnoi-Token", BOT_NOI_Config.Key)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

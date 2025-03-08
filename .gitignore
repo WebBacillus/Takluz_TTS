@@ -1,3 +1,5 @@
 .vercel
 
 *.mp3
+
+config.yaml
