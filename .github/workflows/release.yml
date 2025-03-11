@@ -1,29 +1,31 @@
 name: Release
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*.*.*'
 
 jobs:
-  upload-release-assets:
+  release:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-    - name: Upload Takluz_TTS.exe
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.16'
+
+    - name: Build
+      run: go build -o Takluz_TTS.exe
+
+    - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.release.upload_url }}
         asset_path: ./Takluz_TTS.exe
         asset_name: Takluz_TTS.exe
         asset_content_type: application/octet-stream
-
-    - name: Upload example.yaml
-      uses: actions/upload-release-asset@v1
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./example.yaml
-        asset_name: example.yaml
-        asset_content_type: text/yaml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
