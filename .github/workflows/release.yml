@@ -1,28 +1,32 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
+  release:
+    types: [created]  # Or [published] if you want to trigger after manual publishing
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3  # Use v3, it's more current
 
-    - name: Upload Release Asset
+    - name: Upload Release Asset (EXE)
       uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for authorization
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./Takluz_TTS.exe
+        asset_path: ./Takluz_TTS.exe # Make sure this path is correct!
         asset_name: Takluz_TTS.exe
         asset_content_type: application/octet-stream
+
     - name: Upload example.yaml
       uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for authorization
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./example.yaml
+        asset_path: ./example.yaml # Make sure this path is correct!
         asset_name: example.yaml
         asset_content_type: text/yaml
