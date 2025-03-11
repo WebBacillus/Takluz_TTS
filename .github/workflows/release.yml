@@ -11,22 +11,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3  # Use v3, it's more current
 
-    - name: Upload Release Asset (EXE)
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for authorization
-      with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./Takluz_TTS.exe # Make sure this path is correct!
-        asset_name: Takluz_TTS.exe
-        asset_content_type: application/octet-stream
+    - name: Zip Takluz_TTS folder
+      run: zip -r Takluz_TTS.zip Takluz_TTS
 
-    - name: Upload example.yaml
+    - name: Upload Release Asset (ZIP)
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for authorization
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./example.yaml # Make sure this path is correct!
-        asset_name: example.yaml
-        asset_content_type: text/yaml
+        asset_path: ./Takluz_TTS.zip # Make sure this path is correct!
+        asset_name: Takluz_TTS.zip
+        asset_content_type: application/zip
+
