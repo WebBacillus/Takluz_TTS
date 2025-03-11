@@ -1,4 +1,4 @@
-package prefix
+package command
 
 import (
 	"fmt"
@@ -32,6 +32,24 @@ func ConcatAudio(inputFiles []string, outputFile string) error {
 
 	if output, err := cmd.CombinedOutput(); err != nil {
 		return fmt.Errorf("failed to concatenate audio files: %v\nOutput: %s", err, string(output))
+	}
+
+	return nil
+}
+
+func CreateSilentAudio() error {
+	args := []string{
+		"-y",
+		"-f", "lavfi",
+		"-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
+		"-t", "1",
+		"-q:a", "0",
+		"speech.mp3",
+	}
+	cmd := exec.Command("ffmpeg", args...)
+
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to create silent audio file: %v\nOutput: %s", err, string(output))
 	}
 
 	return nil

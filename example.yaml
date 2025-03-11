@@ -1,0 +1,30 @@
+# This is an example configuration file. Rename this file from example.yaml to config.yaml to use it.
+AI: "RESEMBLE" #(OPEN_AI, BOT_NOI, RESEMBLE)
+OPEN_AI:
+  KEY: "ADD_YOUR_OWN_KEY_HERE"
+  MODEL: "tts-1-hd"
+  SPEED: "0.8"
+  VOICE: "alloy"
+OBS:
+  URL: "localhost:4455"
+  KEY: "ADD_YOUR_OWN_KEY_HERE"
+  BROWSER: "Browser"
+  MEDIA: "Media Source"
+
+LIMIT: 300
+
+BOT_NOI:
+  KEY: "ADD_YOUR_OWN_KEY_HERE"
+  SPEAKER: "8"
+  VOLUME: 0.8
+  SPEED: 0.8
+  TYPE_MEDIA: "mp3"
+  SAVE_FILE: true
+  LANGUAGE: "th"
+
+RESEMBLE:
+  KEY: "ADD_YOUR_OWN_KEY_HERE"
+  VOICE_UUID: "55592656"
+  SAMPLE_RATE:  48000
+  OUTPUT_FORMAT: "mp3"
+  SPEED: "80%"

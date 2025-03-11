@@ -6,6 +6,7 @@ toolchain go1.24.0
 
 require (
 	github.com/andreykaipov/goobs v1.5.4
+	github.com/fatih/color v1.18.0
 	github.com/gofiber/fiber/v2 v2.52.6
 )
 

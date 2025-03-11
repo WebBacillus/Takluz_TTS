@@ -1,99 +1,23 @@
 package main
 
 import (
-	fetchsound "Takluz_TTS/audio/sound"
+	command "Takluz_TTS/audio/prefix"
+	"Takluz_TTS/audio/sound"
 	myInterface "Takluz_TTS/myInterface"
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"path/filepath"
 	"strings"
-	"text/template"
-	"time"
+	"syscall"
 
+	"github.com/fatih/color"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
 
 	"github.com/andreykaipov/goobs"
-	"github.com/andreykaipov/goobs/api/requests/inputs"
-	"github.com/andreykaipov/goobs/api/requests/mediainputs"
 )
-
-func playAnimation(client *goobs.Client, inputName, htmlDirectory string, userName string, message string) error {
-	if len(message) >= 300 {
-		message = message[:300] + " ..."
-	}
-
-	// print(message)
-	// for i, rune := range message {
-	// 	fmt.Println(i, string(rune))
-	// }
-
-	funcMap := template.FuncMap{
-		"split": strings.Split,
-	}
-
-	tmpl := template.Must(template.New("index.html").Funcs(funcMap).ParseFiles(htmlDirectory + "/index.html"))
-
-	data := struct {
-		UserName string
-		Message  string
-	}{
-		UserName: userName,
-		Message:  message,
-	}
-
-	f, err := os.Create(htmlDirectory + "/print.html")
-	if err != nil {
-		log.Fatal("Error creating file:", err)
-	}
-	defer f.Close()
-
-	err = tmpl.Execute(f, data)
-	if err != nil {
-		log.Fatal("Error writing to file:", err)
-	}
-
-	_, err = client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
-		"url": "file://" + htmlDirectory + "/print.html",
-	}))
-	if err != nil {
-		return err
-	}
-
-	_, err = client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
-		"refresh": true,
-	}))
-
-	time.AfterFunc(8*time.Second, func() {
-		_, err := client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
-			"url": "",
-		}))
-		if err != nil {
-			log.Println("Failed to turn off animation:", err)
-		}
-	})
-
-	return err
-}
-
-func playSound(client *goobs.Client, inputName, filePath string) error {
-	// _, err := client.MediaInputs.SetMediaInputCursor(mediainputs.NewSetMediaInputCursorParams().WithInputName(inputName).WithMediaCursor(0))
-	// if err != nil {
-	// 	return err
-	// }
-
-	_, err := client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
-		"local_file": filePath,
-	}))
-	if err != nil {
-		return err
-	}
-
-	_, err = client.MediaInputs.TriggerMediaInputAction(mediainputs.NewTriggerMediaInputActionParams().WithInputName(inputName).WithMediaAction("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"))
-
-	return err
-}
 
 func getPath(nextPath string) string {
 	currentDir, err := os.Getwd()
@@ -149,7 +73,6 @@ func main() {
 		OutputFormat: viper.GetString("RESEMBLE.OUTPUT_FORMAT"),
 		Speed:        viper.GetString("RESEMBLE.SPEED"),
 	}
-	// fmt.Println(Resemble_config)
 
 	AI := viper.GetString("AI")
 	limitToken := viper.GetInt("LIMIT")
@@ -159,6 +82,17 @@ func main() {
 		panic(err)
 	}
 	defer client.Disconnect()
+	command.CreateSilentAudio()
+	// sound.InitSound(client, OBS_Config.Media, getPath("speech.mp3"))
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		fmt.Println("END")
+		command.CreateSilentAudio()
+		os.Exit(0)
+	}()
 
 	app := fiber.New()
 	app.Post("/", func(c *fiber.Ctx) error {
@@ -173,36 +107,34 @@ func main() {
 		}
 
 		if AI == "BOT_NOI" {
-			fetchsound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.mp3")
+			sound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.mp3")
 		} else if AI == "OPEN_AI" {
-			fetchsound.GetSound(message.Message, Open_AI_Config, "speech.mp3")
+			sound.GetSound(message.Message, Open_AI_Config, "speech.mp3")
 		} else if AI == "RESEMBLE" {
 			text := fmt.Sprintf(`<speak>
-				<voice name="0f2f9a7e" uuid="%s">
-					<prosody rate="%s">
+					<prosody rate="%s" pitch="x-high">
 						<lang xml:lang="th-th">
-							%s
+								%s
 						</lang>
 					</prosody>
-				</voice>
-			</speak>`, Resemble_config.VoiceUUID, Resemble_config.Speed, message.Message)
-			fetchsound.GetSoundResemble(text, Resemble_config, "speech.mp3")
+			</speak>`, Resemble_config.Speed, message.Message)
+			sound.GetSoundResemble(text, Resemble_config, "speech.mp3")
 		} else {
 			return c.Status(400).JSON(fiber.Map{"error": "Invalid AI configuration"})
 		}
-
 		// prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
 
-		err = playSound(client, OBS_Config.Media, getPath("speech.mp3"))
+		err = sound.PlaySound(client, OBS_Config.Media, getPath("speech.mp3"))
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		// err = playAnimation(client, OBS_Config.Browser, getPath("templates"), message.UserName, message.Message)
+		// err = sound.PlayAnimation(client, OBS_Config.Browser, getPath("templates"), message.UserName, message.Message)
 		// if err != nil {
 		// 	log.Println(err.Error())
 		// }
-		fmt.Println(message.UserName, "used", len(message.Message), "characters", message.Message)
+
+		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
 		return c.Status(200).SendString(message.Message)
 
 	})

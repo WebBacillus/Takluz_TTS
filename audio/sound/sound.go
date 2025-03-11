@@ -1,6 +1,7 @@
-package fetchsound
+package sound
 
 import (
+	command "Takluz_TTS/audio/prefix"
 	myInterface "Takluz_TTS/myInterface"
 	"bytes"
 	"compress/gzip"
@@ -8,9 +9,41 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
+	"strings"
+	"text/template"
+	"time"
+
+	"github.com/andreykaipov/goobs"
+	"github.com/andreykaipov/goobs/api/requests/inputs"
+	"github.com/andreykaipov/goobs/api/requests/mediainputs"
 )
+
+func InitSound(client *goobs.Client, inputName, filePath string) error {
+	_, err := client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
+		"local_file": filePath,
+	}))
+	if err != nil {
+		log.Println("Error setting input settings:", err)
+		return err
+	}
+	return nil
+}
+
+func PlaySound(client *goobs.Client, inputName, filePath string) error {
+	go func() {
+		time.Sleep(10 * time.Second)
+		command.CreateSilentAudio()
+	}()
+	_, err := client.MediaInputs.TriggerMediaInputAction(mediainputs.NewTriggerMediaInputActionParams().WithInputName(inputName).WithMediaAction("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"))
+	if err != nil {
+		log.Println("Error triggering media input action:", err)
+		return err
+	}
+	return nil
+}
 
 func GetSound(message string, Open_AI_Config myInterface.Open_AI_Config, outputPath string) {
 	url := "https://api.openai.com/v1/audio/speech"
@@ -62,7 +95,7 @@ func GetSound(message string, Open_AI_Config myInterface.Open_AI_Config, outputP
 		return
 	}
 
-	fmt.Println("MP3 file saved as", outputPath)
+	// fmt.Println("MP3 file saved as", outputPath)
 }
 
 func GetSoundBotNoi(message string, BOT_NOI_Config myInterface.BOT_NOI_Config, outputPath string) {
@@ -143,7 +176,7 @@ func GetSoundBotNoi(message string, BOT_NOI_Config myInterface.BOT_NOI_Config, o
 		return
 	}
 
-	fmt.Println("MP3 file saved as", outputPath)
+	// fmt.Println("MP3 file saved as", outputPath)
 }
 
 func GetSoundResemble(message string, Resemble_Config myInterface.Resemble_Config, outputPath string) bool {
@@ -154,7 +187,7 @@ func GetSoundResemble(message string, Resemble_Config myInterface.Resemble_Confi
 		"sample_rate":   Resemble_Config.SampleRate,
 		"output_format": Resemble_Config.OutputFormat,
 	}
-
+	// print(message)
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		fmt.Println("Error marshalling JSON:", err)
@@ -230,10 +263,68 @@ func GetSoundResemble(message string, Resemble_Config myInterface.Resemble_Confi
 			return false
 		}
 
-		fmt.Println("Audio saved to", outputPath)
+		// fmt.Println("Audio saved to", outputPath)
 		return true
 	} else {
 		fmt.Printf("Error: Resemble API returned success=false. Issues: %v\n", responseData["issues"])
 		return false
 	}
+}
+
+func PlayAnimation(client *goobs.Client, inputName, htmlDirectory string, userName string, message string) error {
+	if len(message) >= 300 {
+		message = message[:300] + " ..."
+	}
+
+	// print(message)
+	// for i, rune := range message {
+	// 	fmt.Println(i, string(rune))
+	// }
+
+	funcMap := template.FuncMap{
+		"split": strings.Split,
+	}
+
+	tmpl := template.Must(template.New("index.html").Funcs(funcMap).ParseFiles(htmlDirectory + "/index.html"))
+
+	data := struct {
+		UserName string
+		Message  string
+	}{
+		UserName: userName,
+		Message:  message,
+	}
+
+	f, err := os.Create(htmlDirectory + "/print.html")
+	if err != nil {
+		log.Fatal("Error creating file:", err)
+	}
+	defer f.Close()
+
+	err = tmpl.Execute(f, data)
+	if err != nil {
+		log.Fatal("Error writing to file:", err)
+	}
+
+	_, err = client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
+		"url": "file://" + htmlDirectory + "/print.html",
+	}))
+	if err != nil {
+		return err
+	}
+
+	_, err = client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
+		"refresh": true,
+	}))
+
+	time.AfterFunc(8*time.Second, func() {
+		_, err := client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
+			"url": "",
+		}))
+		if err != nil {
+			log.Println("Failed to turn off animation:", err)
+		}
+	})
+
+	return err
 }
