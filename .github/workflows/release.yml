@@ -16,7 +16,7 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: f:\Project\Takluz\Takluz_TTS\Takluz_TTS.exe
+        asset_path: ./Takluz_TTS.exe
         asset_name: Takluz_TTS.exe
         asset_content_type: application/octet-stream
 
@@ -24,6 +24,6 @@ jobs:
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: f:\Project\Takluz\Takluz_TTS\example.yaml
+        asset_path: ./example.yaml
         asset_name: example.yaml
         asset_content_type: text/yaml
