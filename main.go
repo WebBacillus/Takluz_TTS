@@ -4,8 +4,10 @@ import (
 	command "Takluz_TTS/audio/prefix"
 	"Takluz_TTS/audio/sound"
 	myInterface "Takluz_TTS/myInterface"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -26,6 +28,38 @@ func getPath(nextPath string) string {
 	}
 	newPath := filepath.Join(currentDir, nextPath)
 	return filepath.ToSlash(newPath)
+}
+
+func checkNewRelease() {
+	resp, err := http.Get("https://api.github.com/repos/webbacillus/Takluz_TTS/releases/latest")
+	if err != nil {
+		log.Println("Error fetching latest release:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	var release struct {
+		HTMLURL string `json:"html_url"`
+		TagName string `json:"tag_name"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
+		log.Println("Error decoding release response:", err)
+		return
+	}
+
+	fmt.Println("---------------------------------------------------")
+	fmt.Println("  Takluz TTS - Text-to-Speech Application")
+	fmt.Println("  Made by:  WebBacillus (https://github.com/webbacillus)")
+	fmt.Println("  Contact:  Web.pasit.kh@gmail.com")
+	fmt.Println("---------------------------------------------------")
+
+	currentVersion := "v1.0.1"
+	if release.TagName == currentVersion {
+		fmt.Println(color.GreenString("You are using the latest version:"), currentVersion)
+	} else {
+		fmt.Println(color.RedString("New version available:"), release.HTMLURL)
+	}
+
 }
 
 func main() {
@@ -83,7 +117,8 @@ func main() {
 	}
 	defer client.Disconnect()
 	command.CreateSilentAudio()
-	// sound.InitSound(client, OBS_Config.Media, getPath("speech.mp3"))
+
+	checkNewRelease()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -94,7 +129,9 @@ func main() {
 		os.Exit(0)
 	}()
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		DisableStartupMessage: true,
+	})
 	app.Post("/", func(c *fiber.Ctx) error {
 		var message myInterface.Message
 		if err := c.BodyParser(&message); err != nil {
