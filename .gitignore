@@ -1,5 +1,5 @@
-.vercel
+/.vercel
 
-*.mp3
+/*.mp3
 
-config.yaml
+/config.yaml
