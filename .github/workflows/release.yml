@@ -26,4 +26,3 @@ jobs:
         asset_path: ./Takluz_TTS_${{ env.RELEASE_VERSION }}.zip # Make sure this path is correct!
         asset_name: Takluz_TTS_${{ env.RELEASE_VERSION }}.zip
         asset_content_type: application/zip
-
