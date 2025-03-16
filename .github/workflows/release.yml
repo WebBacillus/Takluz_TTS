@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4  # v4 is the most current
+      uses: actions/checkout@v3  # v3 is the most current
 
     - name: Set up release version  # Give this step an ID
       id: set_version  # This is the crucial ID
