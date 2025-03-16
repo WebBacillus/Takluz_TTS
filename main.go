@@ -5,6 +5,7 @@ import (
 	"Takluz_TTS/audio/sound"
 	cfg "Takluz_TTS/cfg"
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -14,10 +15,13 @@ import (
 	"path/filepath"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/andreykaipov/goobs"
 )
@@ -117,7 +121,7 @@ func main() {
 		return
 	}
 
-	client, err := goobs.New(OBS_Config.URL, goobs.WithPassword(OBS_Config.Key))
+	goobsClient, err := goobs.New(OBS_Config.URL, goobs.WithPassword(OBS_Config.Key))
 	if err != nil {
 		if strings.Contains(err.Error(), "connection refused") {
 			log.Println("Error: Unable to connect to OBS. Please ensure OBS is running and the WebSocket server is enabled.")
@@ -127,7 +131,31 @@ func main() {
 		waitForExit()
 		return
 	}
-	defer client.Disconnect()
+	defer goobsClient.Disconnect()
+
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	uri := "mongodb+srv://user:ymRLJfpzc5Hy9whv@takluz-tts.y1hqc.mongodb.net/?retryWrites=true&w=majority&appName=takluz-tts"
+	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	mongoClient, err := mongo.Connect(ctx, opts)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err = mongoClient.Disconnect(context.TODO()); err != nil {
+			log.Println(err.Error())
+		}
+	}()
+
+	err = mongoClient.Ping(ctx, nil)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	database := mongoClient.Database("takluz")
+	collection := database.Collection("takluz-tts")
 
 	command.CreateSilentAudio()
 
@@ -155,6 +183,8 @@ func main() {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
+		collection.InsertOne(ctx, message)
+
 		if len(message.Message) >= General_Config.LimitToken {
 			message.Message = message.Message[:General_Config.LimitToken]
 		}
@@ -177,7 +207,7 @@ func main() {
 		}
 		// prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
 
-		err = sound.PlaySound(client, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+		err = sound.PlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
 		if err != nil {
 			log.Println(err.Error())
 		}
