@@ -10,16 +10,17 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # v3 is the most current
+      uses: actions/checkout@v3  # v3 is fine, but v4 is the latest if you want to update
 
-    - name: Set up release version  # Give this step an ID
-      id: set_version  # This is the crucial ID
+    - name: Set up release version
+      id: set_version
       run: echo "release_version=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+      # Removed the leading space before "release_version"
 
     - name: Set up Go
-      uses: actions/setup-go@v5  # Use v5, which is more current
+      uses: actions/setup-go@v5
       with:
-        go-version: '1.23' # Fine, but consider using 'stable' if you don't need a specific version
+        go-version: '1.23' # Fine, but 'stable' is an option for flexibility
 
     - name: Build application
       run: |
@@ -29,7 +30,8 @@ jobs:
 
     - name: Zip application folder
       run: |
-        Compress-Archive -Path releases/* -DestinationPath Takluz_TTS_${{ env.release_version }}.zip -Force
+        Compress-Archive -Path releases/* -DestinationPath Takluz_TTS_${{ env.RELEASE_VERSION }}.zip -Force
+      # Case-insensitive, but env.RELEASE_VERSION is more conventional
 
     - name: Upload Release Asset (ZIP)
       uses: actions/upload-release-asset@v1
@@ -37,6 +39,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./Takluz_TTS_${{ env.release_version }}.zip  # Use the output
-        asset_name: Takluz_TTS_${{ env.release_version }}.zip
+        asset_path: ./Takluz_TTS_${{ env.RELEASE_VERSION }}.zip
+        asset_name: Takluz_TTS_${{ env.RELEASE_VERSION }}.zip
         asset_content_type: application/zip
