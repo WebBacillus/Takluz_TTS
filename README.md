@@ -4,7 +4,7 @@ Takluz_TTS is a text-to-speech (TTS) project that converts written text into spo
 
 ## Usage
 
-For usage instructions, please refer to the [releases](./releases) section.
+For usage instructions, please refer to the [releases](https://github.com/WebBacillus/Takluz_TTS/releases/latest) section.
 
 ## Contact
 
