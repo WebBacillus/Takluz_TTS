@@ -2,7 +2,7 @@ package sound
 
 import (
 	command "Takluz_TTS/audio/prefix"
-	myInterface "Takluz_TTS/myInterface"
+	cfg "Takluz_TTS/cfg"
 	"bytes"
 	"compress/gzip"
 	"encoding/base64"
@@ -32,9 +32,9 @@ func InitSound(client *goobs.Client, inputName, filePath string) error {
 	return nil
 }
 
-func PlaySound(client *goobs.Client, inputName, filePath string) error {
+func PlaySound(client *goobs.Client, inputName string, timeLimit int, filePath string) error {
 	go func() {
-		time.Sleep(10 * time.Second)
+		time.Sleep(time.Duration(timeLimit) * time.Second)
 		command.CreateSilentAudio()
 	}()
 	_, err := client.MediaInputs.TriggerMediaInputAction(mediainputs.NewTriggerMediaInputActionParams().WithInputName(inputName).WithMediaAction("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"))
@@ -45,7 +45,7 @@ func PlaySound(client *goobs.Client, inputName, filePath string) error {
 	return nil
 }
 
-func GetSound(message string, Open_AI_Config myInterface.Open_AI_Config, outputPath string) {
+func GetSound(message string, Open_AI_Config cfg.Open_AI_Config, outputPath string) {
 	url := "https://api.openai.com/v1/audio/speech"
 	body := map[string]string{
 		"model": Open_AI_Config.Model,
@@ -98,7 +98,7 @@ func GetSound(message string, Open_AI_Config myInterface.Open_AI_Config, outputP
 	// fmt.Println("MP3 file saved as", outputPath)
 }
 
-func GetSoundBotNoi(message string, BOT_NOI_Config myInterface.BOT_NOI_Config, outputPath string) {
+func GetSoundBotNoi(message string, BOT_NOI_Config cfg.BOT_NOI_Config, outputPath string) {
 	url := "https://api-voice.botnoi.ai/openapi/v1/generate_audio"
 	body := map[string]any{
 		"text":       message,
@@ -179,7 +179,7 @@ func GetSoundBotNoi(message string, BOT_NOI_Config myInterface.BOT_NOI_Config, o
 	// fmt.Println("MP3 file saved as", outputPath)
 }
 
-func GetSoundResemble(message string, Resemble_Config myInterface.Resemble_Config, outputPath string) bool {
+func GetSoundResemble(message string, Resemble_Config cfg.Resemble_Config, outputPath string) bool {
 	url := "https://f.cluster.resemble.ai/synthesize"
 	body := map[string]any{
 		"voice_uuid":    Resemble_Config.VoiceUUID,

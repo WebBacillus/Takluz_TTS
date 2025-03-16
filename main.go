@@ -3,7 +3,8 @@ package main
 import (
 	command "Takluz_TTS/audio/prefix"
 	"Takluz_TTS/audio/sound"
-	myInterface "Takluz_TTS/myInterface"
+	cfg "Takluz_TTS/cfg"
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -62,63 +63,73 @@ func checkNewRelease() {
 
 }
 
+func waitForExit() {
+	fmt.Println("Press 'Enter' to exit...")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
+}
+
 func main() {
+	checkNewRelease()
+
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("fatal error config file: %s", err))
+		log.Println(fmt.Errorf("fatal error config file: %s", err))
+		waitForExit()
+		return
 	}
 
-	//init OPEN_API
-	Open_AI_Config := myInterface.Open_AI_Config{
-		Key:   viper.GetString("OPEN_AI.KEY"),
-		Model: viper.GetString("OPEN_AI.MODEL"),
-		Speed: viper.GetString("OPEN_AI.SPEED"),
-		Voice: viper.GetString("OPEN_AI.VOICE"),
+	Open_AI_Config, err := cfg.InitOpenAIConfig()
+	if err != nil {
+		log.Println(err)
+		waitForExit()
+		return
 	}
 
-	//init OBS
-	OBS_Config := myInterface.OBS_Config{
-		URL:     viper.GetString("OBS.URL"),
-		Key:     viper.GetString("OBS.KEY"),
-		Browser: viper.GetString("OBS.BROWSER"),
-		Media:   viper.GetString("OBS.MEDIA"),
+	OBS_Config, err := cfg.InitOBSConfig()
+	if err != nil {
+		log.Println(err)
+		waitForExit()
+		return
 	}
 
-	//init BOT_NOI
-	BOT_NOI_Config := myInterface.BOT_NOI_Config{
-		Key:       viper.GetString("BOT_NOI.KEY"),
-		Speaker:   viper.GetString("BOT_NOI.SPEAKER"),
-		Volume:    viper.GetFloat64("BOT_NOI.VOLUME"),
-		Speed:     viper.GetFloat64("BOT_NOI.SPEED"),
-		TypeMedia: viper.GetString("BOT_NOI.TYPE_MEDIA"),
-		SaveFile:  viper.GetBool("BOT_NOI.SAVE_FILE"),
-		Language:  viper.GetString("BOT_NOI.LANGUAGE"),
+	BOT_NOI_Config, err := cfg.InitBotNoiConfig()
+	if err != nil {
+		log.Println(err)
+		waitForExit()
+		return
 	}
 
-	//init Resemble
-	Resemble_config := myInterface.Resemble_Config{
-		Key:          viper.GetString("RESEMBLE.KEY"),
-		VoiceUUID:    viper.GetString("RESEMBLE.VOICE_UUID"),
-		SampleRate:   viper.GetInt("RESEMBLE.SAMPLE_RATE"),
-		OutputFormat: viper.GetString("RESEMBLE.OUTPUT_FORMAT"),
-		Speed:        viper.GetString("RESEMBLE.SPEED"),
+	Resemble_config, err := cfg.InitResembleConfig()
+	if err != nil {
+		log.Println(err)
+		waitForExit()
+		return
 	}
 
-	AI := viper.GetString("AI")
-	limitToken := viper.GetInt("LIMIT")
+	General_Config, err := cfg.InitGeneralConfig()
+	if err != nil {
+		log.Println(err)
+		waitForExit()
+		return
+	}
 
 	client, err := goobs.New(OBS_Config.URL, goobs.WithPassword(OBS_Config.Key))
 	if err != nil {
-		panic(err)
+		if strings.Contains(err.Error(), "connection refused") {
+			log.Println("Error: Unable to connect to OBS. Please ensure OBS is running and the WebSocket server is enabled.")
+		} else {
+			log.Println("Error: Invalid OBS WebSocket URL or password.")
+		}
+		waitForExit()
+		return
 	}
 	defer client.Disconnect()
-	command.CreateSilentAudio()
 
-	checkNewRelease()
+	command.CreateSilentAudio()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -133,21 +144,26 @@ func main() {
 		DisableStartupMessage: true,
 	})
 	app.Post("/", func(c *fiber.Ctx) error {
-		var message myInterface.Message
+
+		type Message struct {
+			UserName string `json:"userName"`
+			Message  string `json:"message"`
+		}
+
+		var message Message
 		if err := c.BodyParser(&message); err != nil {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		if len(message.Message) >= limitToken {
-			message.Message = message.Message[:limitToken]
-
+		if len(message.Message) >= General_Config.LimitToken {
+			message.Message = message.Message[:General_Config.LimitToken]
 		}
 
-		if AI == "BOT_NOI" {
+		if General_Config.AI == "BOT_NOI" {
 			sound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.mp3")
-		} else if AI == "OPEN_AI" {
+		} else if General_Config.AI == "OPEN_AI" {
 			sound.GetSound(message.Message, Open_AI_Config, "speech.mp3")
-		} else if AI == "RESEMBLE" {
+		} else if General_Config.AI == "RESEMBLE" {
 			text := fmt.Sprintf(`<speak>
 					<prosody rate="%s" pitch="x-high">
 						<lang xml:lang="th-th">
@@ -161,7 +177,7 @@ func main() {
 		}
 		// prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
 
-		err = sound.PlaySound(client, OBS_Config.Media, getPath("speech.mp3"))
+		err = sound.PlaySound(client, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -177,4 +193,9 @@ func main() {
 	})
 
 	app.Listen("localhost:4444")
+	if err != nil {
+		log.Println(err)
+		waitForExit()
+		return
+	}
 }
