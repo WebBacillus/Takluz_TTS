@@ -1,0 +1,11 @@
+template: |
+  ## What's Changed
+
+  $CHANGES
+
+categories:
+  - title: 'Changes'
+    label: '*'  # Catch-all for other labels
+
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
