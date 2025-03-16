@@ -14,8 +14,19 @@ jobs:
     - name: Set up release version
       run: echo "RELEASE_VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.24'
+
+    - name: Build application
+      run: |
+        mkdir -p release
+        go build -o releases/Takluz_TTS main.go
+        cp application/config.yaml releases/
+
     - name: Zip application folder
-      run: cd application && zip -r ../Takluz_TTS_${{ env.RELEASE_VERSION }}.zip . && cd ..
+      run: cd releases && zip -r ../Takluz_TTS_${{ env.RELEASE_VERSION }}.zip . && cd ..
 
     - name: Upload Release Asset (ZIP)
       uses: actions/upload-release-asset@v1

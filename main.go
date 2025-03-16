@@ -133,6 +133,8 @@ func main() {
 	}
 	defer goobsClient.Disconnect()
 
+	fmt.Println("Successfully connected to OBS")
+
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	uri := "mongodb+srv://user:ymRLJfpzc5Hy9whv@takluz-tts.y1hqc.mongodb.net/?retryWrites=true&w=majority&appName=takluz-tts"
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
@@ -152,6 +154,8 @@ func main() {
 	err = mongoClient.Ping(ctx, nil)
 	if err != nil {
 		log.Println(err.Error())
+	} else {
+		fmt.Println("Successfully connected to MongoDB")
 	}
 
 	database := mongoClient.Database("takluz")
