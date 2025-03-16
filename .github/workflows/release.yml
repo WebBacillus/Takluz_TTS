@@ -6,35 +6,36 @@ on:
 
 jobs:
   release:
-    runs-on: windows-latest
+    runs-on: windows-latest  # This is correct for building on Windows
+
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Use v3, it's more current
+      uses: actions/checkout@v4  # v4 is the most current
 
     - name: Set up release version
       run: echo "RELEASE_VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
     - name: Set up Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v5  # Use v5, which is more current
       with:
-        go-version: '1.24'
+        go-version: '1.23' # Fine, but consider using 'stable' if you don't need a specific version
 
     - name: Build application
       run: |
-        mkdir -p release
-        go build -o releases/Takluz_TTS.exe main.go
+        mkdir -p releases
+        go build -o releases/Takluz_TTS.exe -ldflags="-s -w" main.go
         cp application/config.yaml releases/
 
     - name: Zip application folder
-      run: cd releases && zip -r ../Takluz_TTS_${{ env.RELEASE_VERSION }}.zip . && cd ..
+      run: |
+        Compress-Archive -Path releases/* -DestinationPath Takluz_TTS_${{ env.RELEASE_VERSION }}.zip -Force
 
     - name: Upload Release Asset (ZIP)
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for authorization
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ github.event.release.upload_url }}
-        asset_path: ./Takluz_TTS_${{ env.RELEASE_VERSION }}.zip # Make sure this path is correct!
+        asset_path: ./Takluz_TTS_${{ env.RELEASE_VERSION }}.zip # Correct path
         asset_name: Takluz_TTS_${{ env.RELEASE_VERSION }}.zip
         asset_content_type: application/zip
-
