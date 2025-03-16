@@ -15,7 +15,7 @@ jobs:
       run: echo "RELEASE_VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
     - name: Zip application folder
-      run: zip -r Takluz_TTS_${{ env.RELEASE_VERSION }}.zip application
+      run: cd application && zip -r ../Takluz_TTS_${{ env.RELEASE_VERSION }}.zip . && cd ..
 
     - name: Upload Release Asset (ZIP)
       uses: actions/upload-release-asset@v1
