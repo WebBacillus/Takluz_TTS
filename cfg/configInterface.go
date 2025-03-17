@@ -32,6 +32,12 @@ type Resemble_Config struct {
 	Speed        string `json:"speed"`
 }
 
+type Microsoft_Config struct {
+	Key    string `json:"key"`
+	Region string `json:"region"`
+	Voice  string `json:"voice"`
+}
+
 type General_Config struct {
 	AI         string `json:"ai"`
 	LimitToken int    `json:"limit_token"`

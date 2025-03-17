@@ -1,7 +1,6 @@
 package main
 
 import (
-	command "Takluz_TTS/audio/prefix"
 	"Takluz_TTS/audio/sound"
 	cfg "Takluz_TTS/cfg"
 	"bufio"
@@ -11,10 +10,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/fatih/color"
@@ -56,7 +53,7 @@ func checkNewRelease() {
 	fmt.Println("  Contact:  Web.pasit.kh@gmail.com")
 	fmt.Println("---------------------------------------------------")
 
-	currentVersion := "v1.0.1"
+	currentVersion := "v1.0.3"
 	if release.TagName == currentVersion {
 		fmt.Println(color.GreenString("You are using the latest version:"), currentVersion)
 	} else {
@@ -84,33 +81,12 @@ func main() {
 		return
 	}
 
-	Open_AI_Config, err := cfg.InitOpenAIConfig()
-	if err != nil {
-		log.Println(err)
-		waitForExit()
-		return
-	}
-
 	// OBS_Config, err := cfg.InitOBSConfig()
 	// if err != nil {
 	// 	log.Println(err)
 	// 	waitForExit()
 	// 	return
 	// }
-
-	BOT_NOI_Config, err := cfg.InitBotNoiConfig()
-	if err != nil {
-		log.Println(err)
-		waitForExit()
-		return
-	}
-
-	Resemble_config, err := cfg.InitResembleConfig()
-	if err != nil {
-		log.Println(err)
-		waitForExit()
-		return
-	}
 
 	General_Config, err := cfg.InitGeneralConfig()
 	if err != nil {
@@ -161,26 +137,27 @@ func main() {
 	database := mongoClient.Database("takluz")
 	collection := database.Collection("takluz-tts")
 
-	command.CreateSilentAudio()
+	// command.CreateSilentAudio()
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-c
-		fmt.Println("END")
-		command.CreateSilentAudio()
-		os.Exit(0)
-	}()
+	// c := make(chan os.Signal, 1)
+	// signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	// go func() {
+	// 	<-c
+	// 	fmt.Println("END")
+	// 	command.CreateSilentAudio()
+	// 	os.Exit(0)
+	// }()
+
+	type Message struct {
+		UserName string `json:"userName"`
+		Message  string `json:"message"`
+	}
 
 	app := fiber.New(fiber.Config{
 		DisableStartupMessage: true,
 	})
-	app.Post("/", func(c *fiber.Ctx) error {
 
-		type Message struct {
-			UserName string `json:"userName"`
-			Message  string `json:"message"`
-		}
+	app.Use("/", func(c *fiber.Ctx) error {
 
 		var message Message
 		if err := c.BodyParser(&message); err != nil {
@@ -193,38 +170,125 @@ func main() {
 			message.Message = message.Message[:General_Config.LimitToken]
 		}
 
-		if General_Config.AI == "BOT_NOI" {
-			sound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.mp3")
-		} else if General_Config.AI == "OPEN_AI" {
-			sound.GetSound(message.Message, Open_AI_Config, "speech.mp3")
-		} else if General_Config.AI == "RESEMBLE" {
-			text := fmt.Sprintf(`<speak>
-					<prosody rate="%s" pitch="x-high">
-						<lang xml:lang="th-th">
-								%s
-						</lang>
-					</prosody>
-			</speak>`, Resemble_config.Speed, message.Message)
-			sound.GetSoundResemble(text, Resemble_config, "speech.mp3")
-		} else {
-			return c.Status(400).JSON(fiber.Map{"error": "Invalid AI configuration"})
-		}
-		// prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
+		c.Locals("message", message)
+		return c.Next()
+	})
 
-		// err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+	app.Post("/open_ai", func(c *fiber.Ctx) error {
+		Open_AI_Config, err := cfg.InitOpenAIConfig()
+		if err != nil {
+			log.Println(err)
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+
+		message := c.Locals("message").(Message)
+		err = sound.GetSoundOpenAI(message.Message, Open_AI_Config, "speech.mp3")
+		if err != nil {
+			log.Println(err.Error())
+		}
+
 		err = sound.FFplayAudio(getPath("speech.mp3"))
 		if err != nil {
 			log.Println(err.Error())
 		}
 
-		// err = sound.PlayAnimation(client, OBS_Config.Browser, getPath("templates"), message.UserName, message.Message)
-		// if err != nil {
-		// 	log.Println(err.Error())
-		// }
+		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
+		return c.Status(200).SendString(message.Message)
+	})
+
+	app.Post("/na", func(c *fiber.Ctx) error {
+		BOT_NOI_Config, err := cfg.InitBotNoiConfig()
+		if err != nil {
+			log.Println(err)
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+
+		message := c.Locals("message").(Message)
+		err = sound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.mp3")
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		err = sound.FFplayAudio(getPath("speech.mp3"))
+		if err != nil {
+			log.Println(err.Error())
+		}
 
 		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
 		return c.Status(200).SendString(message.Message)
+	})
 
+	app.Post("/bot_noi", func(c *fiber.Ctx) error {
+		BOT_NOI_Config, err := cfg.InitBotNoiConfig()
+		if err != nil {
+			log.Println(err)
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+
+		message := c.Locals("message").(Message)
+		err = sound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.mp3")
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		err = sound.FFplayAudio(getPath("speech.mp3"))
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
+		return c.Status(200).SendString(message.Message)
+	})
+
+	app.Post("/resemble", func(c *fiber.Ctx) error {
+		Resemble_config, err := cfg.InitResembleConfig()
+		if err != nil {
+			log.Println(err)
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+
+		message := c.Locals("message").(Message)
+		text := fmt.Sprintf(`<speak>
+                <prosody rate="%s" pitch="x-high">
+                    <lang xml:lang="th-th">
+                            %s
+                    </lang>
+                </prosody>
+        </speak>`, Resemble_config.Speed, message.Message)
+		err = sound.GetSoundResemble(text, Resemble_config, "speech.mp3")
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		err = sound.FFplayAudio(getPath("speech.mp3"))
+		if err != nil {
+			log.Println(err.Error())
+		}
+
+		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
+		return c.Status(200).SendString(message.Message)
+	})
+
+	app.Post("/azure", func(c *fiber.Ctx) error {
+		Microsoft_Config, err := cfg.InitMicrosoftConfig()
+		if err != nil {
+			log.Println(err)
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+
+		message := c.Locals("message").(Message)
+		err = sound.GetSoundAzure(message.Message, Microsoft_Config, "speech.mp3")
+		if err != nil {
+			log.Println(err)
+		}
+
+		err = sound.FFplayAudio(getPath("speech.mp3"))
+		if err != nil {
+			log.Println(err)
+		}
+
+		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
+		return c.Status(200).SendString(message.Message)
 	})
 
 	app.Listen("localhost:4444")

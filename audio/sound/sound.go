@@ -19,7 +19,7 @@ import (
 	"github.com/andreykaipov/goobs/api/requests/inputs"
 )
 
-func GetSound(message string, Open_AI_Config cfg.Open_AI_Config, outputPath string) {
+func GetSoundOpenAI(message string, Open_AI_Config cfg.Open_AI_Config, outputPath string) error {
 	url := "https://api.openai.com/v1/audio/speech"
 	body := map[string]string{
 		"model": Open_AI_Config.Model,
@@ -30,14 +30,12 @@ func GetSound(message string, Open_AI_Config cfg.Open_AI_Config, outputPath stri
 
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
-		fmt.Println("Error marshalling JSON:", err)
-		return
+		return fmt.Errorf("error marshalling JSON: %v", err)
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
+		return fmt.Errorf("error creating request: %v", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -46,33 +44,29 @@ func GetSound(message string, Open_AI_Config cfg.Open_AI_Config, outputPath stri
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error making request:", err)
-		return
+		return fmt.Errorf("error making request: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Error: received non-200 response code:", resp.StatusCode)
-		return
+		return fmt.Errorf("error: received non-200 response code: %d", resp.StatusCode)
 	}
 
 	outFile, err := os.Create(outputPath)
 	if err != nil {
-		fmt.Println("Error creating file:", err)
-		return
+		return fmt.Errorf("error creating file: %v", err)
 	}
 	defer outFile.Close()
 
 	_, err = io.Copy(outFile, resp.Body)
 	if err != nil {
-		fmt.Println("Error saving response to file:", err)
-		return
+		return fmt.Errorf("error saving response to file: %v", err)
 	}
 
-	// fmt.Println("MP3 file saved as", outputPath)
+	return nil
 }
 
-func GetSoundBotNoi(message string, BOT_NOI_Config cfg.BOT_NOI_Config, outputPath string) {
+func GetSoundBotNoi(message string, BOT_NOI_Config cfg.BOT_NOI_Config, outputPath string) error {
 	url := "https://api-voice.botnoi.ai/openapi/v1/generate_audio"
 	body := map[string]any{
 		"text":       message,
@@ -86,14 +80,12 @@ func GetSoundBotNoi(message string, BOT_NOI_Config cfg.BOT_NOI_Config, outputPat
 
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
-		fmt.Println("Error marshalling JSON:", err)
-		return
+		return fmt.Errorf("error marshalling JSON: %v", err)
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return
+		return fmt.Errorf("error creating request: %v", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -102,58 +94,50 @@ func GetSoundBotNoi(message string, BOT_NOI_Config cfg.BOT_NOI_Config, outputPat
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error making request:", err)
-		return
+		return fmt.Errorf("error making request: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Error: received non-200 response code:", resp.StatusCode)
-		return
+		return fmt.Errorf("error: received non-200 response code: %d", resp.StatusCode)
 	}
 
 	var result map[string]interface{}
 	err = json.NewDecoder(resp.Body).Decode(&result)
 	if err != nil {
-		fmt.Println("Error decoding JSON response:", err)
-		return
+		return fmt.Errorf("error decoding JSON response: %v", err)
 	}
 
 	audioURL, ok := result["audio_url"].(string)
 	if !ok {
-		fmt.Println("Error: audio_url not found in response")
-		return
+		return fmt.Errorf("error: audio_url not found in response")
 	}
 
 	audioResp, err := http.Get(audioURL)
 	if err != nil {
-		fmt.Println("Error downloading audio file:", err)
-		return
+		return fmt.Errorf("error downloading audio file: %v", err)
 	}
 	defer audioResp.Body.Close()
 
 	if audioResp.StatusCode != http.StatusOK {
-		fmt.Println("Error: received non-200 response code while downloading audio:", audioResp.StatusCode)
-		return
+		return fmt.Errorf("error: received non-200 response code while downloading audio: %d", audioResp.StatusCode)
 	}
 
 	outFile, err := os.Create(outputPath)
 	if err != nil {
-		fmt.Println("Error creating file:", err)
-		return
+		return fmt.Errorf("error creating file: %v", err)
 	}
 	defer outFile.Close()
 
 	_, err = io.Copy(outFile, audioResp.Body)
 	if err != nil {
-		fmt.Println("Error saving audio to file:", err)
-		return
+		return fmt.Errorf("error saving audio to file: %v", err)
 	}
 
-	// fmt.Println("MP3 file saved as", outputPath)
+	return nil
 }
 
-func GetSoundResemble(message string, Resemble_Config cfg.Resemble_Config, outputPath string) bool {
+func GetSoundResemble(message string, Resemble_Config cfg.Resemble_Config, outputPath string) error {
 	url := "https://f.cluster.resemble.ai/synthesize"
 	body := map[string]any{
 		"voice_uuid":    Resemble_Config.VoiceUUID,
@@ -164,14 +148,12 @@ func GetSoundResemble(message string, Resemble_Config cfg.Resemble_Config, outpu
 	// print(message)
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
-		fmt.Println("Error marshalling JSON:", err)
-		return false
+		return fmt.Errorf("error marshalling JSON: %v", err)
 	}
 
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
 	if err != nil {
-		fmt.Println("Error creating request:", err)
-		return false
+		return fmt.Errorf("error creating request: %v", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -181,14 +163,12 @@ func GetSoundResemble(message string, Resemble_Config cfg.Resemble_Config, outpu
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println("Error making request:", err)
-		return false
+		return fmt.Errorf("error making request: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		fmt.Println("Error: received non-200 response code:", resp.StatusCode)
-		return false
+		return fmt.Errorf("error: received non-200 response code: %d", resp.StatusCode)
 	}
 
 	var reader io.ReadCloser
@@ -196,8 +176,7 @@ func GetSoundResemble(message string, Resemble_Config cfg.Resemble_Config, outpu
 	case "gzip":
 		reader, err = gzip.NewReader(resp.Body)
 		if err != nil {
-			fmt.Println("Error creating gzip reader:", err)
-			return false
+			return fmt.Errorf("error creating gzip reader: %v", err)
 		}
 		defer reader.Close()
 	default:
@@ -207,42 +186,94 @@ func GetSoundResemble(message string, Resemble_Config cfg.Resemble_Config, outpu
 	var responseData map[string]interface{}
 	err = json.NewDecoder(reader).Decode(&responseData)
 	if err != nil {
-		fmt.Println("Error decoding JSON response:", err)
-		return false
+		return fmt.Errorf("error decoding JSON response: %v", err)
 	}
 
 	if success, ok := responseData["success"].(bool); ok && success {
 		audioContent, ok := responseData["audio_content"].(string)
 		if !ok {
-			fmt.Println("Error: 'audio_content' not found in the response.")
-			return false
+			return fmt.Errorf("error: 'audio_content' not found in the response")
 		}
 
 		audioBytes, err := base64.StdEncoding.DecodeString(audioContent)
 		if err != nil {
-			fmt.Println("Error: Invalid base64 data in audio_content.")
-			return false
+			return fmt.Errorf("error: invalid base64 data in audio_content: %v", err)
 		}
 
 		outFile, err := os.Create(outputPath)
 		if err != nil {
-			fmt.Println("Error creating file:", err)
-			return false
+			return fmt.Errorf("error creating file: %v", err)
 		}
 		defer outFile.Close()
 
 		_, err = outFile.Write(audioBytes)
 		if err != nil {
-			fmt.Println("Error saving audio to file:", err)
-			return false
+			return fmt.Errorf("error saving audio to file: %v", err)
 		}
 
-		// fmt.Println("Audio saved to", outputPath)
-		return true
+		return nil
 	} else {
-		fmt.Printf("Error: Resemble API returned success=false. Issues: %v\n", responseData["issues"])
-		return false
+		return fmt.Errorf("error: Resemble API returned success=false. Issues: %v", responseData["issues"])
 	}
+}
+
+func GetSoundAzure(message string, Microsoft_Config cfg.Microsoft_Config, outputPath string) error {
+	url := fmt.Sprintf("https://%s.tts.speech.microsoft.com/cognitiveservices/v1", Microsoft_Config.Region)
+
+	ssml := fmt.Sprintf(`<speak version='1.0' xml:lang='th-TH'>
+		<voice xml:lang='th-TH' xml:gender='Female' name='%s'>
+			%s
+		</voice>
+	</speak>`, Microsoft_Config.Voice, message)
+
+	jsonBody := []byte(ssml)
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonBody))
+	if err != nil {
+		return fmt.Errorf("error creating request: %v", err)
+	}
+
+	req.Header.Set("Ocp-Apim-Subscription-Key", Microsoft_Config.Key)
+	req.Header.Set("Content-Type", "application/ssml+xml")
+	req.Header.Set("X-Microsoft-OutputFormat", "audio-16khz-128kbitrate-mono-mp3")
+	req.Header.Set("User-Agent", "curl")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("error making request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("error: received non-200 response code: %s", resp.Status)
+	}
+
+	outFile, err := os.Create(outputPath)
+	if err != nil {
+		return fmt.Errorf("error creating file: %v", err)
+	}
+	defer outFile.Close()
+
+	_, err = io.Copy(outFile, resp.Body)
+	if err != nil {
+		return fmt.Errorf("error saving response to file: %v", err)
+	}
+
+	return nil
+
+	// body, err := ioutil.ReadAll(resp.Body)
+	// if err != nil {
+	// 	return fmt.Errorf("error reading response body: %v", err)
+	// }
+
+	// err = ioutil.WriteFile(outputPath, body, 0644)
+	// if err != nil {
+	// 	return fmt.Errorf("error writing to file: %v", err)
+	// }
+
+	// fmt.Println("Audio content written to file:", outputPath)
+	// return nil
 }
 
 func PlayAnimation(client *goobs.Client, inputName, htmlDirectory string, userName string, message string) error {
@@ -271,25 +302,28 @@ func PlayAnimation(client *goobs.Client, inputName, htmlDirectory string, userNa
 
 	f, err := os.Create(htmlDirectory + "/print.html")
 	if err != nil {
-		log.Fatal("Error creating file:", err)
+		return fmt.Errorf("error creating file: %v", err)
 	}
 	defer f.Close()
 
 	err = tmpl.Execute(f, data)
 	if err != nil {
-		log.Fatal("Error writing to file:", err)
+		return fmt.Errorf("error writing to file: %v", err)
 	}
 
 	_, err = client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
 		"url": "file://" + htmlDirectory + "/print.html",
 	}))
 	if err != nil {
-		return err
+		return fmt.Errorf("error setting input settings: %v", err)
 	}
 
 	_, err = client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
 		"refresh": true,
 	}))
+	if err != nil {
+		return fmt.Errorf("error refreshing input settings: %v", err)
+	}
 
 	time.AfterFunc(8*time.Second, func() {
 		_, err := client.Inputs.SetInputSettings(inputs.NewSetInputSettingsParams().WithInputName(inputName).WithInputSettings(map[string]interface{}{
@@ -300,5 +334,5 @@ func PlayAnimation(client *goobs.Client, inputName, htmlDirectory string, userNa
 		}
 	})
 
-	return err
+	return nil
 }

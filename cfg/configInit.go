@@ -134,3 +134,23 @@ func InitGeneralConfig() (General_Config, error) {
 
 	return config, nil
 }
+
+func InitMicrosoftConfig() (Microsoft_Config, error) {
+	config := Microsoft_Config{
+		Key:    viper.GetString("MICROSOFT.KEY"),
+		Region: viper.GetString("MICROSOFT.REGION"),
+		Voice:  viper.GetString("MICROSOFT.VOICE"),
+	}
+
+	if config.Key == "ADD_YOUR_OWN_KEY_HERE" || config.Key == "" {
+		return config, fmt.Errorf("MICROSOFT.KEY is required")
+	}
+	if config.Region == "ADD_YOUR_OWN_REGION_HERE" || config.Region == "" {
+		config.Region = "eastus"
+	}
+	if config.Voice == "ADD_YOUR_OWN_VOICE_HERE" || config.Voice == "" {
+		config.Voice = "th-TH-SuchadaNeural"
+	}
+
+	return config, nil
+}
