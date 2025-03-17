@@ -22,8 +22,6 @@ import (
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	"github.com/andreykaipov/goobs"
 )
 
 func getPath(nextPath string) string {
@@ -93,12 +91,12 @@ func main() {
 		return
 	}
 
-	OBS_Config, err := cfg.InitOBSConfig()
-	if err != nil {
-		log.Println(err)
-		waitForExit()
-		return
-	}
+	// OBS_Config, err := cfg.InitOBSConfig()
+	// if err != nil {
+	// 	log.Println(err)
+	// 	waitForExit()
+	// 	return
+	// }
 
 	BOT_NOI_Config, err := cfg.InitBotNoiConfig()
 	if err != nil {
@@ -121,19 +119,21 @@ func main() {
 		return
 	}
 
-	goobsClient, err := goobs.New(OBS_Config.URL, goobs.WithPassword(OBS_Config.Key))
-	if err != nil {
-		if strings.Contains(err.Error(), "connection refused") {
-			log.Println("Error: Unable to connect to OBS. Please ensure OBS is running and the WebSocket server is enabled.")
-		} else {
-			log.Println("Error: Invalid OBS WebSocket URL or password.")
+	/*
+		goobsClient, err := goobs.New(OBS_Config.URL, goobs.WithPassword(OBS_Config.Key))
+		if err != nil {
+			if strings.Contains(err.Error(), "connection refused") {
+				log.Println("Error: Unable to connect to OBS. Please ensure OBS is running and the WebSocket server is enabled.")
+			} else {
+				log.Println("Error: Invalid OBS WebSocket URL or password.")
+			}
+			waitForExit()
+			return
 		}
-		waitForExit()
-		return
-	}
-	defer goobsClient.Disconnect()
+		defer goobsClient.Disconnect()
 
-	fmt.Println("Successfully connected to OBS")
+		fmt.Println("Successfully connected to OBS")
+	*/
 
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	uri := "mongodb+srv://user:ymRLJfpzc5Hy9whv@takluz-tts.y1hqc.mongodb.net/?retryWrites=true&w=majority&appName=takluz-tts"
@@ -211,7 +211,8 @@ func main() {
 		}
 		// prefix.ConcatAudio([]string{"sample-3s.mp3", "speech.mp3"}, "output.mp3")
 
-		err = sound.PlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+		// err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+		err = sound.FFplayAudio(getPath("speech.mp3"))
 		if err != nil {
 			log.Println(err.Error())
 		}
