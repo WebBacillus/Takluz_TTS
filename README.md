@@ -4,6 +4,17 @@ Takluz_TTS is a text-to-speech (TTS) project that converts written text into spo
 
 
 Okay, here's an improved "Usage" section with more detailed instructions, incorporating your steps and information about supported TTS engines:
+## Application examples
+* **TURN ON AUDIO FIRST**
+
+https://github.com/user-attachments/assets/a13dec69-70a5-4600-8870-987a531c1613
+
+[Full Clip](https://www.twitch.tv/takluz/clip/FaintMiniatureTrayWow-TYVUjG5PHFksa8i0)
+
+https://github.com/user-attachments/assets/3f445c20-90ca-4086-b9a4-b0148171c0b2
+
+[Full Clip](https://www.twitch.tv/takluz/clip/CorrectEvilButterPogChamp-PmfPRK0Lz6-wpMai)
+
 
 ## Usage
 
