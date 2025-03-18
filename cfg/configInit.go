@@ -140,6 +140,7 @@ func InitMicrosoftConfig() (Microsoft_Config, error) {
 		Key:    viper.GetString("MICROSOFT.KEY"),
 		Region: viper.GetString("MICROSOFT.REGION"),
 		Voice:  viper.GetString("MICROSOFT.VOICE"),
+		Speed:  viper.GetString("MICROSOFT.SPEED"),
 	}
 
 	if config.Key == "ADD_YOUR_OWN_KEY_HERE" || config.Key == "" {
@@ -150,6 +151,9 @@ func InitMicrosoftConfig() (Microsoft_Config, error) {
 	}
 	if config.Voice == "ADD_YOUR_OWN_VOICE_HERE" || config.Voice == "" {
 		config.Voice = "th-TH-SuchadaNeural"
+	}
+	if config.Speed == "" {
+		config.Speed = "1"
 	}
 
 	return config, nil

@@ -142,15 +142,6 @@ func main() {
 
 	command.CreateSilentAudio()
 
-	// c := make(chan os.Signal, 1)
-	// signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	// go func() {
-	// 	<-c
-	// 	fmt.Println("END")
-	// 	command.CreateSilentAudio()
-	// 	os.Exit(0)
-	// }()
-
 	type Message struct {
 		UserName string `json:"userName"`
 		Message  string `json:"message"`

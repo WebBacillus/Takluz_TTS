@@ -36,6 +36,7 @@ type Microsoft_Config struct {
 	Key    string `json:"key"`
 	Region string `json:"region"`
 	Voice  string `json:"voice"`
+	Speed  string `json:"speed"`
 }
 
 type General_Config struct {

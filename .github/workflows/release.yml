@@ -17,11 +17,23 @@ jobs:
         TAG=${{ github.event.release.tag_name }}
         echo "VERSION=${TAG#v}" >> $GITHUB_ENV
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install PyInstaller
+      run: pip install pyinstaller
+
+    - name: Build setting.py
+      run: pyinstaller --onefile setting.py
+
     - name: Build application
       run: |
         mkdir -p releases
         go build -o releases/Takluz_TTS.exe -ldflags="-s -w" main.go
         cp application/config.yaml releases/
+        cp dist/setting.exe releases/
 
     - name: Create ZIP file
       run: |

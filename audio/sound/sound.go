@@ -222,9 +222,11 @@ func GetSoundAzure(message string, Microsoft_Config cfg.Microsoft_Config, output
 
 	ssml := fmt.Sprintf(`<speak version='1.0' xml:lang='th-TH'>
 		<voice xml:lang='th-TH' xml:gender='Female' name='%s'>
-			%s
+			<prosody rate='%s'>
+				%s
+			</prosody>
 		</voice>
-	</speak>`, Microsoft_Config.Voice, message)
+	</speak>`, Microsoft_Config.Voice, Microsoft_Config.Speed, message)
 
 	jsonBody := []byte(ssml)
 
