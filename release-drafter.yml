@@ -4,8 +4,18 @@ template: |
   $CHANGES
 
 categories:
-  - title: 'Changes'
-    label: '*'  # Catch-all for other labels
+  - title: '🚀 Features'
+    label: 'feature, enhancement'  # Comma-separated list of labels
+  - title: '🐛 Bug Fixes'
+    label: 'bug, fix'
+  - title: '📝 Documentation'
+    label: 'documentation, docs'
+  - title: '⬆️ Dependencies'
+    label: 'dependencies'
+  - title: '⚙️ Maintenance'
+    label: 'chore, maintenance'
+  - title: 'Other Changes' #good practice to make other changes
+    label: '*'
 
 name-template: 'v$RESOLVED_VERSION'
 tag-template: 'v$RESOLVED_VERSION'
