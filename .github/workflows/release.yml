@@ -2,7 +2,7 @@ name: Release
 
 on:
   release:
-    types: [created]  # Or [published] if you want to trigger after manual publishing
+    types: [published]  # Or [published] if you want to trigger after manual publishing
 
 jobs:
   release:
