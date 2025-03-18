@@ -45,7 +45,7 @@ func InitOBSConfig() (OBS_Config, error) {
 		return config, fmt.Errorf("OBS.KEY is required")
 	}
 	if config.Browser == "ADD_YOUR_OWN_BROWSER_HERE" || config.Browser == "" {
-		return config, fmt.Errorf("OBS.BROWSER is required")
+		config.Browser = ""
 	}
 	if config.Media == "ADD_YOUR_OWN_MEDIA_HERE" || config.Media == "" {
 		return config, fmt.Errorf("OBS.MEDIA is required")
@@ -117,19 +117,19 @@ func InitResembleConfig() (Resemble_Config, error) {
 
 func InitGeneralConfig() (General_Config, error) {
 	config := General_Config{
-		AI:         viper.GetString("AI"),
-		LimitToken: viper.GetInt("LIMIT"),
-		TimeLimit:  viper.GetInt("TIME_LIMIT"),
+		LimitToken: viper.GetInt("GENERAL.LIMIT"),
+		TimeLimit:  viper.GetInt("GENERAL.TIME_LIMIT"),
+		Player:     viper.GetString("GENERAL.PLAYER"),
 	}
 
-	if config.AI == "ADD_YOUR_OWN_AI_HERE" || config.AI == "" {
-		config.AI = "default_ai"
-	}
 	if config.LimitToken == 0 {
 		config.LimitToken = 1000
 	}
 	if config.TimeLimit == 0 {
-		config.TimeLimit = 60
+		config.TimeLimit = 10
+	}
+	if config.Player == "" {
+		config.Player = "FFPLAY"
 	}
 
 	return config, nil

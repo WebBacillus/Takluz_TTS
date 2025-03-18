@@ -1,37 +1,35 @@
-AI: "RESEMBLE" #CHOSE YOUR TTS APPLICATION (OPEN_AI, BOT_NOI, RESEMBLE)
-OPEN_AI:
-  KEY: "ADD_YOUR_OWN_KEY_HERE"
-  MODEL: "tts-1-hd" #(tts-1, tts-1-hd)
-  SPEED: "0.8"
-  VOICE: "alloy"
-
 OBS:
-  URL: "localhost:4455"
-  KEY: "ADD_YOUR_OWN_KEY_HERE"
-  BROWSER: "ADD_YOUR_OWN_BROWER_SOURCE_HERE"
-  MEDIA: "ADD_YOUR_OWN_MEDIA_SOURCE_HERE"
+  URL: localhost:4455
+  KEY: ADD_YOUR_OWN_KEY_HERE
+  BROWSER: ADD_YOUR_OWN_BROWER_SOURCE_HERE
+  MEDIA: Media Source
+OPEN_AI:
+  KEY: ADD_YOUR_OWN_KEY_HERE
+  MODEL: tts-1-hd #tts-1 or tts-1-hd
+  SPEED: 0.8 #0.25 to 4.0
+  VOICE: alloy #alloy, ash, coral, echo, fable, onyx, nova, sage and shimmer
 
 MICROSOFT:
-  KEY: "ADD_YOUR_OWN_KEY_HERE"
-  REGION: "ADD_YOUR_OWN_REGION_HERE"
-  VOICE: "th-TH-NiwatNeural"
+  KEY: ADD_YOUR_OWN_KEY_HERE
+  REGION: ADD_YOUR_OWN_REGION_HERE
+  VOICE: th-TH-NiwatNeural #    th-TH-PrempreedaNeural, th-TH-NiwatNeural: Male voice. Another high-quality neural option., th-TH-AcharaNeural, th-TH-PattaraNeural
 
 BOT_NOI:
-
-  KEY: "ADD_YOUR_OWN_KEY_HERE"
-  SPEAKER: "8"
-  VOLUME: 0.8
-  SPEED: 0.8
-  TYPE_MEDIA: "mp3"
-  SAVE_FILE: true
-  LANGUAGE: "th"
+  KEY: ADD_YOUR_OWN_KEY_HERE
+  SPEAKER: 8
+  VOLUME: 0.8 # 0.0 - 1.0
+  SPEED: 0.8 # 0.0 - 1.0
+  TYPE_MEDIA: mp3 # do not setting this
+  SAVE_FILE: true # do not setting this
+  LANGUAGE: th
 
 RESEMBLE:
-  KEY: "ADD_YOUR_OWN_KEY_HERE"
-  VOICE_UUID: "55592656"
-  SAMPLE_RATE:  48000
-  OUTPUT_FORMAT: "mp3"
-  SPEED: "80%"
+  KEY: ADD_YOUR_OWN_KEY_HERE
+  VOICE_UUID: 55592656
+  SAMPLE_RATE:  48000 # do not setting this
+  OUTPUT_FORMAT: mp3 # do not setting this
+  SPEED: 80%
 
-LIMIT: 300 #LIMIT CHARACTER PER MESSAGE
-TIME_LIMIT: 10 #LIMIT SPEECH TIME PER MESSAGE
+GENERAL:
+  LIMIT: 200
+  TIME_LIMIT: 10

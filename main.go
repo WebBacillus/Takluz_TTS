@@ -1,6 +1,7 @@
 package main
 
 import (
+	command "Takluz_TTS/audio/prefix"
 	"Takluz_TTS/audio/sound"
 	cfg "Takluz_TTS/cfg"
 	"bufio"
@@ -14,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/andreykaipov/goobs"
 	"github.com/fatih/color"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
@@ -81,12 +83,12 @@ func main() {
 		return
 	}
 
-	// OBS_Config, err := cfg.InitOBSConfig()
-	// if err != nil {
-	// 	log.Println(err)
-	// 	waitForExit()
-	// 	return
-	// }
+	OBS_Config, err := cfg.InitOBSConfig()
+	if err != nil {
+		log.Println(err)
+		waitForExit()
+		return
+	}
 
 	General_Config, err := cfg.InitGeneralConfig()
 	if err != nil {
@@ -95,7 +97,8 @@ func main() {
 		return
 	}
 
-	/*
+	var goobsClient *goobs.Client
+	if General_Config.Player == "OBS" {
 		goobsClient, err := goobs.New(OBS_Config.URL, goobs.WithPassword(OBS_Config.Key))
 		if err != nil {
 			if strings.Contains(err.Error(), "connection refused") {
@@ -109,7 +112,7 @@ func main() {
 		defer goobsClient.Disconnect()
 
 		fmt.Println("Successfully connected to OBS")
-	*/
+	}
 
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	uri := "mongodb+srv://user:ymRLJfpzc5Hy9whv@takluz-tts.y1hqc.mongodb.net/?retryWrites=true&w=majority&appName=takluz-tts"
@@ -137,7 +140,7 @@ func main() {
 	database := mongoClient.Database("takluz")
 	collection := database.Collection("takluz-tts")
 
-	// command.CreateSilentAudio()
+	command.CreateSilentAudio()
 
 	// c := make(chan os.Signal, 1)
 	// signal.Notify(c, os.Interrupt, syscall.SIGTERM)
@@ -187,29 +190,11 @@ func main() {
 			log.Println(err.Error())
 		}
 
-		err = sound.FFplayAudio(getPath("speech.mp3"))
-		if err != nil {
-			log.Println(err.Error())
+		if General_Config.Player == "OBS" {
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+		} else if General_Config.Player == "FFPLAY" {
+			err = sound.FFplayAudio(getPath("speech.mp3"))
 		}
-
-		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
-		return c.Status(200).SendString(message.Message)
-	})
-
-	app.Post("/na", func(c *fiber.Ctx) error {
-		BOT_NOI_Config, err := cfg.InitBotNoiConfig()
-		if err != nil {
-			log.Println(err)
-			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
-		}
-
-		message := c.Locals("message").(Message)
-		err = sound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.mp3")
-		if err != nil {
-			log.Println(err.Error())
-		}
-
-		err = sound.FFplayAudio(getPath("speech.mp3"))
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -231,7 +216,11 @@ func main() {
 			log.Println(err.Error())
 		}
 
-		err = sound.FFplayAudio(getPath("speech.mp3"))
+		if General_Config.Player == "OBS" {
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+		} else if General_Config.Player == "FFPLAY" {
+			err = sound.FFplayAudio(getPath("speech.mp3"))
+		}
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -260,7 +249,11 @@ func main() {
 			log.Println(err.Error())
 		}
 
-		err = sound.FFplayAudio(getPath("speech.mp3"))
+		if General_Config.Player == "OBS" {
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+		} else if General_Config.Player == "FFPLAY" {
+			err = sound.FFplayAudio(getPath("speech.mp3"))
+		}
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -282,7 +275,11 @@ func main() {
 			log.Println(err)
 		}
 
-		err = sound.FFplayAudio(getPath("speech.mp3"))
+		if General_Config.Player == "OBS" {
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+		} else if General_Config.Player == "FFPLAY" {
+			err = sound.FFplayAudio(getPath("speech.mp3"))
+		}
 		if err != nil {
 			log.Println(err)
 		}

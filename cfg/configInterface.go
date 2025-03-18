@@ -39,7 +39,8 @@ type Microsoft_Config struct {
 }
 
 type General_Config struct {
-	AI         string `json:"ai"`
+	// AI         string `json:"ai"`
 	LimitToken int    `json:"limit_token"`
 	TimeLimit  int    `json:"time_limit"`
+	Player     string `json:"player"`
 }
