@@ -22,8 +22,11 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install PyInstaller
-      run: pip install pyinstaller
+    - name: Install dependencies
+      run: |
+        pip install pyinstaller
+        pip install customtkinter
+        pip install pyyaml
 
     - name: Build setting.py
       run: pyinstaller --onefile setting.py

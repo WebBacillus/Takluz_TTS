@@ -9,7 +9,7 @@ on:
   # Creates a pull request for any change in the main branch
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   update_release_draft:
