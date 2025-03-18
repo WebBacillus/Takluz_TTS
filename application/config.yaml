@@ -13,6 +13,7 @@ MICROSOFT:
   KEY: ADD_YOUR_OWN_KEY_HERE
   REGION: ADD_YOUR_OWN_REGION_HERE
   VOICE: th-TH-NiwatNeural #    th-TH-PrempreedaNeural, th-TH-NiwatNeural: Male voice. Another high-quality neural option., th-TH-AcharaNeural, th-TH-PattaraNeural
+  SPEED: 0.8
 
 BOT_NOI:
   KEY: ADD_YOUR_OWN_KEY_HERE
@@ -33,3 +34,4 @@ RESEMBLE:
 GENERAL:
   LIMIT: 200
   TIME_LIMIT: 10
+  PLAYER: OBS
