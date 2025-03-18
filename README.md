@@ -24,8 +24,9 @@ Okay, here's an improved "Usage" section with more detailed instructions, incorp
     *   In SAMMI, create a new deck.  A deck is essentially a collection of buttons and commands.  You can name it something like "Takluz_TTS".
 
 *   **Import Takluz_TTS Buttons:**
-    *   **Locate the JSON file:** Find the appropriate JSON file within the [SAMMI](https://github.com/WebBacillus/Takluz_TTS/tree/master/sammi) that corresponds to your chosen TTS engine (OpenAI, Azure, Botnoi, or Resemble AI). These JSON files contain pre-configured button layouts and commands.
+    *   **Locate the JSON file:** Find the appropriate JSON file within the ![SAMMI](sammi) that corresponds to your chosen TTS engine (OpenAI, Azure, Botnoi, or Resemble AI). These JSON files contain pre-configured button layouts and commands.
     *   **Import:** In SAMMI, within your new deck, right-click on an empty area and select "Import JSON".  Paste the contents of the JSON file you copied from the repository. This will create the necessary buttons for controlling Takluz_TTS.
+    *   ![](resource/sammi1.png)
 
 **3. Configure Takluz_TTS Settings (setting.exe):**
 
@@ -45,6 +46,7 @@ Okay, here's an improved "Usage" section with more detailed instructions, incorp
 * **Get the Server Password:**
     * In the same "WebSockets Server Settings" window, click the "Show Connect Info" button.
     * Copy the "Server Password" from this dialog.
+     ![](resource/obs1.png)
 
 *  **Configure OBS in `setting.exe`:**
    *   Return to `setting.exe`.
