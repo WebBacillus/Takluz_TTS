@@ -9,11 +9,17 @@ Okay, here's an improved "Usage" section with more detailed instructions, incorp
 
 https://github.com/user-attachments/assets/a13dec69-70a5-4600-8870-987a531c1613
 
-[Full Clip](https://www.twitch.tv/takluz/clip/FaintMiniatureTrayWow-TYVUjG5PHFksa8i0)
+Full Clip [Here](https://www.twitch.tv/takluz/clip/FaintMiniatureTrayWow-TYVUjG5PHFksa8i0)
 
 https://github.com/user-attachments/assets/3f445c20-90ca-4086-b9a4-b0148171c0b2
 
-[Full Clip](https://www.twitch.tv/takluz/clip/CorrectEvilButterPogChamp-PmfPRK0Lz6-wpMai)
+Full Clip [Here](https://www.twitch.tv/takluz/clip/CorrectEvilButterPogChamp-PmfPRK0Lz6-wpMai)
+
+
+
+https://github.com/user-attachments/assets/54fcacc3-e1c5-4de3-a242-0351ea7c62f9
+
+Full Clip [Here](https://www.twitch.tv/videos/2404580110?t=1h44m5s)
 
 
 ## Usage
