@@ -158,3 +158,32 @@ func InitMicrosoftConfig() (Microsoft_Config, error) {
 
 	return config, nil
 }
+
+func InitGoogleConfig() (Google_Config, error) {
+	config := Google_Config{
+		Key:          viper.GetString("GOOGLE.KEY"),
+		Name:         viper.GetString("GOOGLE.NAME"),
+		SpeakingRate: viper.GetFloat64("GOOGLE.SPEAKING_RATE"),
+		Pitch:        viper.GetFloat64("GOOGLE.PITCH"),
+		VolumeGainDb: viper.GetFloat64("GOOGLE.VOLUME_GAIN_DB"),
+	}
+
+	if config.Name == "ADD_YOUR_OWN_KEY_HERE" || config.Name == "" {
+		return config, fmt.Errorf("GOOGLE.KEY is required")
+	}
+
+	if config.Name == "ADD_YOUR_OWN_NAME_HERE" || config.Name == "" {
+		return config, fmt.Errorf("GOOGLE.NAME is required")
+	}
+	if config.SpeakingRate == 0 {
+		config.SpeakingRate = 1.0
+	}
+	if config.Pitch == 0 {
+		config.Pitch = 0.0
+	}
+	if config.VolumeGainDb == 0 {
+		config.VolumeGainDb = 0.0
+	}
+
+	return config, nil
+}

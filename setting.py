@@ -20,7 +20,7 @@ class ConfigGUI(customtkinter.CTk):
 
         self.sidebar_buttons = {}
         row_num = 0
-        sections_order = ["GENERAL", "OBS", "OPEN_AI", "MICROSOFT"]  # Define your custom order here
+        sections_order = ["GENERAL", "OBS", "OPEN_AI", "MICROSOFT", "GOOGLE"]  # Define your custom order here
         for section in sections_order:
             if section in self.config.keys():
                 button = customtkinter.CTkButton(self.sidebar_frame, text=section, command=lambda s=section: self.show_section(s))
@@ -152,6 +152,21 @@ class ConfigGUI(customtkinter.CTk):
                     options = ["OBS", "FFPLAY"]
                     entry = customtkinter.CTkComboBox(self.content_frame, values=options)
                     entry.set(value if value in options else options[0]) # set value
+                elif key.upper() == 'NAME':
+                    options = [
+                        "th-TH-Chirp3-HD-Aoede",
+                        "th-TH-Chirp3-HD-Charon",
+                        "th-TH-Chirp3-HD-Fenrir",
+                        "th-TH-Chirp3-HD-Kore",
+                        "th-TH-Chirp3-HD-Leda",
+                        "th-TH-Chirp3-HD-Orus",
+                        "th-TH-Chirp3-HD-Puck",
+                        "th-TH-Chirp3-HD-Zephyr",
+                        "th-TH-Neural2-C",
+                        "th-TH-Standard-A"
+                    ]
+                    entry = customtkinter.CTkComboBox(self.content_frame, values=options)
+                    entry.set(value if value in options else options[0])  # Set to value, or first option if invalid
                 else:
                     # Default: standard text entry
                     entry = customtkinter.CTkEntry(self.content_frame)

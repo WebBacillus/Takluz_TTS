@@ -4,6 +4,7 @@ import (
 	cfg "Takluz_TTS/cfg"
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -15,8 +16,11 @@ import (
 	"text/template"
 	"time"
 
+	texttospeech "cloud.google.com/go/texttospeech/apiv1"
+	"cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	"github.com/andreykaipov/goobs"
 	"github.com/andreykaipov/goobs/api/requests/inputs"
+	"google.golang.org/api/option"
 )
 
 func GetSoundOpenAI(message string, Open_AI_Config cfg.Open_AI_Config, outputPath string) error {
@@ -276,6 +280,53 @@ func GetSoundAzure(message string, Microsoft_Config cfg.Microsoft_Config, output
 
 	// fmt.Println("Audio content written to file:", outputPath)
 	// return nil
+}
+
+func GetSoundGoogle(message string, Google_Config cfg.Google_Config, outputPath string) error {
+	// Instantiates a client.
+	ctx := context.Background()
+
+	client, err := texttospeech.NewClient(ctx, option.WithAPIKey(Google_Config.Key))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	// Perform the text-to-speech request on the text input with the selected
+	// voice parameters and audio file type.
+	req := texttospeechpb.SynthesizeSpeechRequest{
+		// Set the text input to be synthesized.
+		Input: &texttospeechpb.SynthesisInput{
+			InputSource: &texttospeechpb.SynthesisInput_Text{Text: message},
+		},
+		// Build the voice request, select the language code ("th-TH") and the SSML
+		// voice gender ("neutral").
+		Voice: &texttospeechpb.VoiceSelectionParams{
+			LanguageCode: "th-TH",
+			SsmlGender:   texttospeechpb.SsmlVoiceGender_NEUTRAL,
+			Name:         Google_Config.Name,
+		},
+		// Select the type of audio file you want returned.
+		AudioConfig: &texttospeechpb.AudioConfig{
+			AudioEncoding:   texttospeechpb.AudioEncoding_LINEAR16,
+			SpeakingRate:    Google_Config.SpeakingRate,
+			Pitch:           Google_Config.Pitch,
+			VolumeGainDb:    Google_Config.VolumeGainDb,
+			SampleRateHertz: 48000,
+		},
+	}
+
+	resp, err := client.SynthesizeSpeech(ctx, &req)
+	if err != nil {
+		return fmt.Errorf("error synthesizing speech: %v", err)
+	}
+
+	err = os.WriteFile(outputPath, resp.AudioContent, 0644)
+	if err != nil {
+		return fmt.Errorf("error writing audio content to file: %v", err)
+	}
+
+	return nil
 }
 
 func PlayAnimation(client *goobs.Client, inputName, htmlDirectory string, userName string, message string) error {

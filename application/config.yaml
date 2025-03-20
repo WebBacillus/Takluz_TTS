@@ -31,6 +31,13 @@ RESEMBLE:
   OUTPUT_FORMAT: mp3 # do not setting this
   SPEED: 80%
 
+GOOGLE:
+  KEY: ADD_YOUR_OWN_KEY_HERE
+  NAME: th-TH-Chirp3-HD-Leda
+  SPEAKING_RATE: 1.0 # 0.25 to 4.0
+  PITCH: 0.0 # -20.0 to 20.0
+  VOLUME_GAIN_DB: 0.0 # -96.0 to 16.0
+
 GENERAL:
   LIMIT: 200
   TIME_LIMIT: 10

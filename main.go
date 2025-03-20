@@ -279,6 +279,32 @@ func main() {
 		return c.Status(200).SendString(message.Message)
 	})
 
+	app.Post("/google", func(c *fiber.Ctx) error {
+		Google_Config, err := cfg.InitGoogleConfig()
+		if err != nil {
+			log.Println(err)
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+
+		message := c.Locals("message").(Message)
+		err = sound.GetSoundGoogle(message.Message, Google_Config, "speech.mp3")
+		if err != nil {
+			log.Println(err)
+		}
+
+		if General_Config.Player == "OBS" {
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+		} else if General_Config.Player == "FFPLAY" {
+			err = sound.FFplayAudio(getPath("speech.mp3"))
+		}
+		if err != nil {
+			log.Println(err)
+		}
+
+		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
+		return c.Status(200).SendString(message.Message)
+	})
+
 	app.Listen("localhost:4444")
 	if err != nil {
 		log.Println(err)

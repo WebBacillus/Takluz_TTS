@@ -39,6 +39,14 @@ type Microsoft_Config struct {
 	Speed  string `json:"speed"`
 }
 
+type Google_Config struct {
+	Key          string  `json:"key"`
+	Name         string  `json:"name"`
+	SpeakingRate float64 `json:"speaking_rate"`
+	Pitch        float64 `json:"pitch"`
+	VolumeGainDb float64 `json:"volume_gain_db"`
+}
+
 type General_Config struct {
 	// AI         string `json:"ai"`
 	LimitToken int    `json:"limit_token"`
