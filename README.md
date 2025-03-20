@@ -4,6 +4,23 @@ Takluz_TTS is a text-to-speech (TTS) project that converts written text into spo
 
 
 Okay, here's an improved "Usage" section with more detailed instructions, incorporating your steps and information about supported TTS engines:
+## Application examples
+* **TURN ON AUDIO FIRST**
+
+https://github.com/user-attachments/assets/a13dec69-70a5-4600-8870-987a531c1613
+
+Full Clip [Here](https://www.twitch.tv/takluz/clip/FaintMiniatureTrayWow-TYVUjG5PHFksa8i0)
+
+https://github.com/user-attachments/assets/3f445c20-90ca-4086-b9a4-b0148171c0b2
+
+Full Clip [Here](https://www.twitch.tv/takluz/clip/CorrectEvilButterPogChamp-PmfPRK0Lz6-wpMai)
+
+
+
+https://github.com/user-attachments/assets/54fcacc3-e1c5-4de3-a242-0351ea7c62f9
+
+Full Clip [Here](https://www.twitch.tv/videos/2404580110?t=1h44m5s)
+
 
 ## Usage
 
@@ -24,8 +41,9 @@ Okay, here's an improved "Usage" section with more detailed instructions, incorp
     *   In SAMMI, create a new deck.  A deck is essentially a collection of buttons and commands.  You can name it something like "Takluz_TTS".
 
 *   **Import Takluz_TTS Buttons:**
-    *   **Locate the JSON file:** Find the appropriate JSON file within the [SAMMI](https://github.com/WebBacillus/Takluz_TTS/tree/master/sammi) that corresponds to your chosen TTS engine (OpenAI, Azure, Botnoi, or Resemble AI). These JSON files contain pre-configured button layouts and commands.
+    *   **Locate the JSON file:** Find the appropriate JSON file within the ![SAMMI](sammi) that corresponds to your chosen TTS engine (OpenAI, Azure, Botnoi, or Resemble AI). These JSON files contain pre-configured button layouts and commands.
     *   **Import:** In SAMMI, within your new deck, right-click on an empty area and select "Import JSON".  Paste the contents of the JSON file you copied from the repository. This will create the necessary buttons for controlling Takluz_TTS.
+    *   ![](resource/sammi1.png)
 
 **3. Configure Takluz_TTS Settings (setting.exe):**
 
@@ -45,6 +63,7 @@ Okay, here's an improved "Usage" section with more detailed instructions, incorp
 * **Get the Server Password:**
     * In the same "WebSockets Server Settings" window, click the "Show Connect Info" button.
     * Copy the "Server Password" from this dialog.
+     ![](resource/obs1.png)
 
 *  **Configure OBS in `setting.exe`:**
    *   Return to `setting.exe`.
