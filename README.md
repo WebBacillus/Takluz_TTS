@@ -2,8 +2,6 @@
 
 Takluz_TTS is a text-to-speech (TTS) project that converts written text into spoken words. It is designed to provide high-quality, natural-sounding speech synthesis.
 
-
-Okay, here's an improved "Usage" section with more detailed instructions, incorporating your steps and information about supported TTS engines:
 ## Application examples
 * **TURN ON AUDIO FIRST**
 
