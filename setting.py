@@ -94,7 +94,7 @@ class ConfigGUI(customtkinter.CTk):
         try:
             with open(self.config_path, "w") as f:
                 yaml.dump(self.config, f, indent=4)
-            messagebox.showinfo("Success", "Configuration saved!")
+            # Removed: messagebox.showinfo("Success", "Configuration saved!")
         except Exception as e:
             messagebox.showerror("Error", f"Failed to save configuration:\n{e}")
 
