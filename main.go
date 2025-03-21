@@ -99,7 +99,7 @@ func main() {
 
 	var goobsClient *goobs.Client
 	if General_Config.Player == "OBS" {
-		goobsClient, err := goobs.New(OBS_Config.URL, goobs.WithPassword(OBS_Config.Key))
+		goobsClient, err = goobs.New(OBS_Config.URL, goobs.WithPassword(OBS_Config.Key))
 		if err != nil {
 			if strings.Contains(err.Error(), "connection refused") {
 				log.Println("Error: Unable to connect to OBS. Please ensure OBS is running and the WebSocket server is enabled.")
