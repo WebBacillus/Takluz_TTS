@@ -110,6 +110,10 @@ func main() {
 			return
 		}
 		defer goobsClient.Disconnect()
+		err = sound.ObsInitSound(goobsClient, OBS_Config.Media, getPath("speech.mp3"))
+		if err != nil {
+			log.Println(err.Error())
+		}
 
 		fmt.Println("Successfully connected to OBS")
 	}
