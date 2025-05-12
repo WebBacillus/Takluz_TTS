@@ -30,10 +30,11 @@ func GetSoundOpenAI(message string, Open_AI_Config cfg.Open_AI_Config, id string
 	instruction := Open_AI_Config.InstructionSet[id].Instruction
 
 	body := map[string]string{
-		"model": Open_AI_Config.Model,
-		"input": message,
-		"speed": Open_AI_Config.Speed,
-		"voice": voice,
+		"model":           Open_AI_Config.Model,
+		"input":           message,
+		"speed":           Open_AI_Config.Speed,
+		"voice":           voice,
+		"response_format": "wav",
 	}
 	if Open_AI_Config.Model == "gpt-4o-mini-tts" {
 		body["voice"] = voice

@@ -96,7 +96,7 @@ func InitBotNoiConfig() (BOT_NOI_Config, error) {
 		config.Speed = 0.8
 	}
 	if config.TypeMedia == "ADD_YOUR_OWN_TYPE_MEDIA_HERE" || config.TypeMedia == "" {
-		config.TypeMedia = "mp3"
+		config.TypeMedia = "wav"
 	}
 	if config.Language == "ADD_YOUR_OWN_LANGUAGE_HERE" || config.Language == "" {
 		config.Language = "th"
@@ -124,7 +124,7 @@ func InitResembleConfig() (Resemble_Config, error) {
 		config.SampleRate = 48000
 	}
 	if config.OutputFormat == "ADD_YOUR_OWN_OUTPUT_FORMAT_HERE" || config.OutputFormat == "" {
-		config.OutputFormat = "mp3"
+		config.OutputFormat = "wav"
 	}
 	if config.Speed == "ADD_YOUR_OWN_SPEED_HERE" || config.Speed == "" {
 		config.Speed = "80%"

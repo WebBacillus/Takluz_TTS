@@ -53,9 +53,10 @@ func checkNewRelease() {
 	fmt.Println("  Takluz TTS - Text-to-Speech Application")
 	fmt.Println("  Made by:  WebBacillus (https://github.com/webbacillus)")
 	fmt.Println("  Contact:  Web.pasit.kh@gmail.com")
+	fmt.Println("  Phone:    +66918683540")
 	fmt.Println("---------------------------------------------------")
 
-	currentVersion := "v1.0.3"
+	currentVersion := "v1.0.4"
 	if release.TagName == currentVersion {
 		fmt.Println(color.GreenString("You are using the latest version:"), currentVersion)
 	} else {
@@ -65,6 +66,7 @@ func checkNewRelease() {
 }
 
 func waitForExit() {
+	command.CreateSilentAudio()
 	fmt.Println("Press 'Enter' to exit...")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
@@ -110,7 +112,7 @@ func main() {
 			return
 		}
 		defer goobsClient.Disconnect()
-		err = sound.ObsInitSound(goobsClient, OBS_Config.Media, getPath("speech.mp3"))
+		err = sound.ObsInitSound(goobsClient, OBS_Config.Media, getPath("speech.wav"))
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -200,15 +202,15 @@ func main() {
 		if err != nil {
 			log.Println("Error inserting message into collection:", err)
 		}
-		err = sound.GetSoundOpenAI(message.Message, Open_AI_Config, id, "speech.mp3")
+		err = sound.GetSoundOpenAI(message.Message, Open_AI_Config, id, "speech.wav")
 		if err != nil {
 			log.Println(err.Error())
 		}
 
 		if General_Config.Player == "OBS" {
-			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.wav"))
 		} else if General_Config.Player == "FFPLAY" {
-			err = sound.FFplayAudio(getPath("speech.mp3"))
+			err = sound.FFplayAudio(getPath("speech.wav"))
 		}
 		if err != nil {
 			log.Println(err.Error())
@@ -226,15 +228,15 @@ func main() {
 		}
 
 		message := c.Locals("message").(Message)
-		err = sound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.mp3")
+		err = sound.GetSoundBotNoi(message.Message, BOT_NOI_Config, "speech.wav")
 		if err != nil {
 			log.Println(err.Error())
 		}
 
 		if General_Config.Player == "OBS" {
-			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.wav"))
 		} else if General_Config.Player == "FFPLAY" {
-			err = sound.FFplayAudio(getPath("speech.mp3"))
+			err = sound.FFplayAudio(getPath("speech.wav"))
 		}
 		if err != nil {
 			log.Println(err.Error())
@@ -259,15 +261,15 @@ func main() {
                     </lang>
                 </prosody>
         </speak>`, Resemble_config.Speed, message.Message)
-		err = sound.GetSoundResemble(text, Resemble_config, "speech.mp3")
+		err = sound.GetSoundResemble(text, Resemble_config, "speech.wav")
 		if err != nil {
 			log.Println(err.Error())
 		}
 
 		if General_Config.Player == "OBS" {
-			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.wav"))
 		} else if General_Config.Player == "FFPLAY" {
-			err = sound.FFplayAudio(getPath("speech.mp3"))
+			err = sound.FFplayAudio(getPath("speech.wav"))
 		}
 		if err != nil {
 			log.Println(err.Error())
@@ -285,15 +287,15 @@ func main() {
 		}
 
 		message := c.Locals("message").(Message)
-		err = sound.GetSoundAzure(message.Message, Microsoft_Config, "speech.mp3")
+		err = sound.GetSoundAzure(message.Message, Microsoft_Config, "speech.wav")
 		if err != nil {
 			log.Println(err)
 		}
 
 		if General_Config.Player == "OBS" {
-			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.wav"))
 		} else if General_Config.Player == "FFPLAY" {
-			err = sound.FFplayAudio(getPath("speech.mp3"))
+			err = sound.FFplayAudio(getPath("speech.wav"))
 		}
 		if err != nil {
 			log.Println(err)
@@ -311,15 +313,15 @@ func main() {
 		}
 
 		message := c.Locals("message").(Message)
-		err = sound.GetSoundGoogle(message.Message, Google_Config, "speech.mp3")
+		err = sound.GetSoundGoogle(message.Message, Google_Config, "speech.wav")
 		if err != nil {
 			log.Println(err)
 		}
 
 		if General_Config.Player == "OBS" {
-			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.mp3"))
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.wav"))
 		} else if General_Config.Player == "FFPLAY" {
-			err = sound.FFplayAudio(getPath("speech.mp3"))
+			err = sound.FFplayAudio(getPath("speech.wav"))
 		}
 		if err != nil {
 			log.Println(err)
@@ -329,7 +331,7 @@ func main() {
 		return c.Status(200).SendString(message.Message)
 	})
 
-	app.Listen("localhost:4444")
+	err = app.Listen("localhost:4444")
 	if err != nil {
 		log.Println(err)
 		waitForExit()

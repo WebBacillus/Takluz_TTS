@@ -58,7 +58,7 @@ BOT_NOI:
   SPEAKER: 8
   VOLUME: 0.8 # 0.0 - 1.0
   SPEED: 0.8 # 0.0 - 1.0
-  TYPE_MEDIA: mp3 # do not setting this
+  TYPE_MEDIA: wav # do not setting this
   SAVE_FILE: true # do not setting this
   LANGUAGE: th
 
@@ -66,7 +66,7 @@ RESEMBLE:
   KEY: ADD_YOUR_OWN_KEY_HERE
   VOICE_UUID: 55592656
   SAMPLE_RATE:  48000 # do not setting this
-  OUTPUT_FORMAT: mp3 # do not setting this
+  OUTPUT_FORMAT: wav # do not setting this
   SPEED: 80%
 
 GOOGLE:

@@ -1,9 +1,7 @@
 package sound
 
 import (
-	command "Takluz_TTS/audio/prefix"
 	"log"
-	"time"
 
 	"github.com/andreykaipov/goobs"
 	"github.com/andreykaipov/goobs/api/requests/inputs"
@@ -22,10 +20,6 @@ func ObsInitSound(client *goobs.Client, inputName, filePath string) error {
 }
 
 func ObsPlaySound(client *goobs.Client, inputName string, timeLimit int, filePath string) error {
-	go func() {
-		time.Sleep(time.Duration(timeLimit) * time.Second)
-		command.CreateSilentAudio()
-	}()
 	_, err := client.MediaInputs.TriggerMediaInputAction(mediainputs.NewTriggerMediaInputActionParams().WithInputName(inputName).WithMediaAction("OBS_WEBSOCKET_MEDIA_INPUT_ACTION_RESTART"))
 	if err != nil {
 		log.Println("Error triggering media input action:", err)

@@ -1,11 +1,12 @@
 /.vercel
 
 /*.mp3
+/*.wav
 
 /config.yaml
-Takluz_TTS_Application/speech.mp3
+Takluz_TTS_Application/speech.*
 
-application/speech.mp3
+application/speech.*
 
 *.exe
 

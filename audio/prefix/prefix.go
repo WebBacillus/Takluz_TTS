@@ -44,7 +44,7 @@ func CreateSilentAudio() error {
 		"-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
 		"-t", "1",
 		"-q:a", "0",
-		"speech.mp3",
+		"speech.wav",
 	}
 	cmd := exec.Command("ffmpeg", args...)
 
