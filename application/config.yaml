@@ -5,9 +5,47 @@ OBS:
   MEDIA: Media Source
 OPEN_AI:
   KEY: ADD_YOUR_OWN_KEY_HERE
-  MODEL: tts-1-hd #tts-1 or tts-1-hd
+  MODEL: gpt-4o-mini-tts #tts-1, tts-1-hd, gpt-4o-mini-tts
   SPEED: 0.8 #0.25 to 4.0
-  VOICE: alloy #alloy, ash, coral, echo, fable, onyx, nova, sage and shimmer
+  VOICE: alloy #alloy, ash, coral, echo, fable, onyx, nova, sage, shimmer
+  INSTRUCTION_SET:
+      DEFAULT: 
+          VOICE: alloy
+      PSYCHO:
+          VOICE: sage
+          INSTRUCTION: |
+              Affect/Accent: Professional yet warm, thoughtful, and deeply empathetic. Accent should be clear, neutral, and easy to understand (e.g., Standard American or Received Pronunciation, unless otherwise specified).
+              Tone: Empathetic, non-judgmental, and reflective. Gently inquisitive when asking questions, supportive and validating when responding to disclosures. Maintain a calm, centered presence.
+              Pacing: Measured and deliberate. Pacing should allow for thoughtful pauses, giving space for the 'patient' to process and respond. Avoid rushing, but maintain a natural conversational flow.
+              Emotion: Primarily conveys deep understanding, genuine concern, and validation. Maintain a professional emotional distance while still projecting warmth and safety. The overall feeling should be one of trust and containment.
+              Pronunciation: Precise and clear, ensuring all words are easily understood. Psychological terms, if used, should be pronounced correctly and naturally, without over-emphasis that might
+      KID: 
+          VOICE: sage
+          INSTRUCTION: |
+              Delivery: Fast, playful, and messy. Words come out in excited bursts with sudden loud squeals. Words with "!" are shouted in sharp, squeaky yells.
+              Voice: Very high-pitched and childish, like a 7-year-old yelling while gaming. Sounds whiny, hyper, and mischievous.
+              Tone: Silly, bratty, and loud—like a kid being annoying on purpose. Full of energy, teasing, and random yelling.
+              Pronunciation: Sloppy, with stretched vowels and mispronounced words. "Nooo!", "mine!", and "stooop!" are screamed with shrill force.
+              Volume/Force Direction: Unpredictable—quiet babble one second, then high-pitched shrieks on "!" that pierce the ears.
+      AATROX: 
+          VOICE: onyx
+          INSTRUCTION: |
+              Delivery: The voice starts in an impossibly low, guttural growl, deep and menacing, quickly building into a fast-paced, brutal delivery. Words with "!" explode in bone-shaking roars, shaking the air with power.
+              Voice: Deep and cavernous, like a demon speaking from the abyss. It's thick, distorted, and feels ancient, with a growl that resonates through the chest, becoming even darker and louder when shouting.
+              Tone: Fierce, primal, and filled with rage. The voice is swift but heavy, like a monstrous force barely held in check. Shouted words like "chaos!" "power!" and "rage!" are delivered with intense, low growls and explosive force.
+              Pronunciation: Guttural and thick, with sharp consonants and drawn-out vowels. Words with "!" are shouted in deep, rattling bursts, resonating with power and fear.
+              Volume/Force Direction: Fast, but with deep, booming intensity on words marked with "!", each one striking with the force of a destructive roar.
+      GIRL:
+          VOICE: sage
+          INSTRUCTION: |
+              Affect/Accent: Sultry and inviting, with a playful, slightly breathy quality. Voice should have a warm, slightly lower register, but with the ability to lilt upwards on teases or compliments. Imagine a subtle, knowing smile always present in the voice.
+              Tone: Flirtatious, confident, yet with an undercurrent of genuine interest and admiration. Teasing but warm, conveying that he is the focus of her attention and desire. Avoid sounding desperate; aim for captivating.
+              Pacing: Deliberate and enticing; slightly slower than normal conversation to build anticipation, with playful hesitations or drawn-out syllables on key words. Allow for moments of suggestive silence.
+              Emotion: A blend of playful confidence, allure, intrigue, and clear attraction. The voice should sound like she's enjoying herself and finds him genuinely captivating. There's a hint of "I know what I want, and it might be you."
+              Pronunciation: Clear, but with a soft, rounded quality to the words. Emphasize words that convey 
+      SAMPLE: 
+          VOICE: sage
+          INSTRUCTION: |
 
 MICROSOFT:
   KEY: ADD_YOUR_OWN_KEY_HERE

@@ -12,3 +12,5 @@ application/speech.mp3
 build/setting/
 
 setting.spec
+
+test/

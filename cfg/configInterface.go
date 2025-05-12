@@ -1,10 +1,16 @@
 package config
 
 type Open_AI_Config struct {
-	Key   string `json:"key"`
-	Model string `json:"model"`
-	Speed string `json:"speed"`
-	Voice string `json:"voice"`
+	Key            string                    `json:"key"`
+	Model          string                    `json:"model"`
+	Speed          string                    `json:"speed"`
+	Voice          string                    `json:"voice"`
+	InstructionSet map[string]InstructionSet `json:"instruction_set"`
+}
+
+type InstructionSet struct {
+	Voice       string `json:"voice"`
+	Instruction string `json:"instruction"`
 }
 
 type OBS_Config struct {

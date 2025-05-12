@@ -23,13 +23,21 @@ import (
 	"google.golang.org/api/option"
 )
 
-func GetSoundOpenAI(message string, Open_AI_Config cfg.Open_AI_Config, outputPath string) error {
+func GetSoundOpenAI(message string, Open_AI_Config cfg.Open_AI_Config, id string, outputPath string) error {
 	url := "https://api.openai.com/v1/audio/speech"
+
+	voice := Open_AI_Config.InstructionSet[id].Voice
+	instruction := Open_AI_Config.InstructionSet[id].Instruction
+
 	body := map[string]string{
 		"model": Open_AI_Config.Model,
 		"input": message,
 		"speed": Open_AI_Config.Speed,
-		"voice": Open_AI_Config.Voice,
+		"voice": voice,
+	}
+	if Open_AI_Config.Model == "gpt-4o-mini-tts" {
+		body["voice"] = voice
+		body["instructions"] = instruction
 	}
 
 	jsonBody, err := json.Marshal(body)
@@ -53,7 +61,8 @@ func GetSoundOpenAI(message string, Open_AI_Config cfg.Open_AI_Config, outputPat
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("error: received non-200 response code: %d", resp.StatusCode)
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		return fmt.Errorf("error: received non-200 response code: %d, response body: %s", resp.StatusCode, string(bodyBytes))
 	}
 
 	outFile, err := os.Create(outputPath)

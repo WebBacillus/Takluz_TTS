@@ -7,12 +7,20 @@ import (
 )
 
 func InitOpenAIConfig() (Open_AI_Config, error) {
+	// var config Open_AI_Config
+	// err := viper.Unmarshal(&config)
+	// if err != nil {
+	// 	return config, fmt.Errorf("UNMARSHAL ERROR")
+	// }
+
 	config := Open_AI_Config{
-		Key:   viper.GetString("OPEN_AI.KEY"),
-		Model: viper.GetString("OPEN_AI.MODEL"),
-		Speed: viper.GetString("OPEN_AI.SPEED"),
-		Voice: viper.GetString("OPEN_AI.VOICE"),
+		Key:            viper.GetString("OPEN_AI.KEY"),
+		Model:          viper.GetString("OPEN_AI.MODEL"),
+		Speed:          viper.GetString("OPEN_AI.SPEED"),
+		Voice:          viper.GetString("OPEN_AI.VOICE"),
+		InstructionSet: convertToInstructionSet(viper.GetStringMap("OPEN_AI.INSTRUCTION_SET")),
 	}
+	viper.UnmarshalKey("OPEN_AI.INSTRUCTION_SET", &config.InstructionSet)
 
 	if config.Key == "ADD_YOUR_OWN_KEY_HERE" || config.Key == "" {
 		return config, fmt.Errorf("OPEN_AI.KEY is required")
@@ -28,6 +36,16 @@ func InitOpenAIConfig() (Open_AI_Config, error) {
 	}
 
 	return config, nil
+}
+
+func convertToInstructionSet(input map[string]any) map[string]InstructionSet {
+	result := make(map[string]InstructionSet)
+	for key, value := range input {
+		if instruction, ok := value.(InstructionSet); ok {
+			result[key] = instruction
+		}
+	}
+	return result
 }
 
 func InitOBSConfig() (OBS_Config, error) {

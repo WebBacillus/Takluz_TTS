@@ -162,8 +162,6 @@ func main() {
 			return c.Status(400).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		collection.InsertOne(ctx, message)
-
 		if len(message.Message) >= General_Config.LimitToken {
 			message.Message = message.Message[:General_Config.LimitToken]
 		}
@@ -172,15 +170,37 @@ func main() {
 		return c.Next()
 	})
 
-	app.Post("/open_ai", func(c *fiber.Ctx) error {
+	app.Post("/open_ai/:id", func(c *fiber.Ctx) error {
+		id := c.Params("id")
 		Open_AI_Config, err := cfg.InitOpenAIConfig()
+		if id == "default" {
+			Open_AI_Config.Model = "tts-1"
+		} else {
+			Open_AI_Config.Model = "gpt-4o-mini-tts"
+		}
 		if err != nil {
 			log.Println(err)
 			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
 		}
 
 		message := c.Locals("message").(Message)
-		err = sound.GetSoundOpenAI(message.Message, Open_AI_Config, "speech.mp3")
+		msgCollectoin := struct {
+			UserName  string    `json:"userName"`
+			Message   string    `json:"message"`
+			ID        string    `json:"id"`
+			Timestamp time.Time `json:"timestamp"`
+		}{
+			UserName:  message.UserName,
+			Message:   message.Message,
+			ID:        id,
+			Timestamp: time.Now(),
+		}
+
+		_, err = collection.InsertOne(ctx, msgCollectoin)
+		if err != nil {
+			log.Println("Error inserting message into collection:", err)
+		}
+		err = sound.GetSoundOpenAI(message.Message, Open_AI_Config, id, "speech.mp3")
 		if err != nil {
 			log.Println(err.Error())
 		}
@@ -194,8 +214,8 @@ func main() {
 			log.Println(err.Error())
 		}
 
-		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
-		return c.Status(200).SendString(message.Message)
+		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message, "with ID:", id)
+		return c.Status(200).SendString(fmt.Sprintf("Message: %s, ID: %s", message.Message, id))
 	})
 
 	app.Post("/bot_noi", func(c *fiber.Ctx) error {
