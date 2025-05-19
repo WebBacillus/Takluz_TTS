@@ -135,10 +135,10 @@ func InitResembleConfig() (Resemble_Config, error) {
 
 func InitGeneralConfig() (General_Config, error) {
 	config := General_Config{
-		LimitToken:  viper.GetInt("GENERAL.LIMIT"),
-		TimeLimit:   viper.GetInt("GENERAL.TIME_LIMIT"),
-		Player:      viper.GetString("GENERAL.PLAYER"),
-		DataCollect: viper.GetBool("GENERAL.DATA_COLLECT"),
+		LimitToken: viper.GetInt("GENERAL.LIMIT"),
+		TimeLimit:  viper.GetInt("GENERAL.TIME_LIMIT"),
+		Player:     viper.GetString("GENERAL.PLAYER"),
+		MongoDBKey: viper.GetString("GENERAL.MONGO_DB_KEY"),
 	}
 
 	if config.LimitToken == 0 {

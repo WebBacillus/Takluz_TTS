@@ -91,6 +91,28 @@ func startPostJobWorker() {
 	}()
 }
 
+func connectMongoDB(mongoDBKey string) (*mongo.Collection, error) {
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI(mongoDBKey).SetServerAPIOptions(serverAPI)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	mongoClient, err := mongo.Connect(ctx, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	err = mongoClient.Ping(ctx, nil)
+	if err != nil {
+		return nil, err
+	} else {
+		fmt.Println("Successfully connected to MongoDB")
+	}
+
+	database := mongoClient.Database("takluz")
+	return database.Collection("takluz-tts"), nil
+}
+
 func main() {
 	checkNewRelease()
 
@@ -140,34 +162,9 @@ func main() {
 		fmt.Println("Successfully connected to OBS")
 	}
 
-	var collection *mongo.Collection
-
-	if General_Config.DataCollect {
-		serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-		uri := "mongodb+srv://user:ymRLJfpzc5Hy9whv@takluz-tts.y1hqc.mongodb.net/?retryWrites=true&w=majority&appName=takluz-tts"
-		opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
-
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
-		mongoClient, err := mongo.Connect(ctx, opts)
-		if err != nil {
-			panic(err)
-		}
-		defer func() {
-			if err = mongoClient.Disconnect(context.TODO()); err != nil {
-				log.Println(err.Error())
-			}
-		}()
-
-		err = mongoClient.Ping(ctx, nil)
-		if err != nil {
-			log.Println(err.Error())
-		} else {
-			fmt.Println("Successfully connected to MongoDB")
-		}
-
-		database := mongoClient.Database("takluz")
-		collection = database.Collection("takluz-tts")
+	collection, err := connectMongoDB(General_Config.MongoDBKey)
+	if err != nil {
+		log.Println("Error: Failed to connect to MongoDB:", err)
 	}
 
 	command.CreateSilentAudio()
@@ -235,7 +232,7 @@ func main() {
 		}
 
 		// Use the correct context for MongoDB insert
-		if General_Config.DataCollect && collection != nil {
+		if collection != nil {
 			_, err = collection.InsertOne(context.TODO(), msgCollectoin)
 			if err != nil {
 				log.Println("Error inserting message into collection:", err)

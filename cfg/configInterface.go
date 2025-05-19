@@ -55,8 +55,8 @@ type Google_Config struct {
 
 type General_Config struct {
 	// AI         string `json:"ai"`
-	LimitToken  int    `json:"limit_token"`
-	TimeLimit   int    `json:"time_limit"`
-	Player      string `json:"player"`
-	DataCollect bool   `json:"data_collect"`
+	LimitToken int    `json:"limit_token"`
+	TimeLimit  int    `json:"time_limit"`
+	Player     string `json:"player"`
+	MongoDBKey string `json:"mongo_db_key"`
 }
