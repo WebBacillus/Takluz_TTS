@@ -1,6 +1,6 @@
 # Takluz_TTS
 
-Takluz_TTS is a text-to-speech (TTS) project that converts written text into spoken words. It is designed to provide high-quality, natural-sounding speech synthesis.
+Takluz TTS is a project designed to enhance the Twitch streaming experience by leveraging OpenAI's Text-to-Speech (TTS) model. Instead of relying on the standard bit and donation triggers for TTS, Takluz TTS introduces a points-based system, allowing viewers to redeem channel points for access to a wider variety of voices and potentially more engaging TTS interactions. This approach aims to offer a more diverse and rewarding TTS experience compared to traditional Twitch TTS implementations, incentivizing viewer engagement and providing streamers with more creative control over their audio interactions.
 
 ## Application examples
 * **TURN ON AUDIO FIRST**
