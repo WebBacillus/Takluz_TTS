@@ -71,6 +71,26 @@ func waitForExit() {
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
 
+// Job struct for queueing POST requests
+// Each job holds a function to execute and a channel for the result
+
+type PostJob struct {
+	Ctx     *fiber.Ctx
+	Handler func(*fiber.Ctx) error
+	Result  chan error
+}
+
+var postJobQueue = make(chan PostJob, 100)
+
+func startPostJobWorker() {
+	go func() {
+		for job := range postJobQueue {
+			err := job.Handler(job.Ctx)
+			job.Result <- err
+		}
+	}()
+}
+
 func main() {
 	checkNewRelease()
 
@@ -120,31 +140,35 @@ func main() {
 		fmt.Println("Successfully connected to OBS")
 	}
 
-	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	uri := "mongodb+srv://user:ymRLJfpzc5Hy9whv@takluz-tts.y1hqc.mongodb.net/?retryWrites=true&w=majority&appName=takluz-tts"
-	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
+	var collection *mongo.Collection
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	mongoClient, err := mongo.Connect(ctx, opts)
-	if err != nil {
-		panic(err)
-	}
-	defer func() {
-		if err = mongoClient.Disconnect(context.TODO()); err != nil {
-			log.Println(err.Error())
+	if General_Config.DataCollect {
+		serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+		uri := "mongodb+srv://user:ymRLJfpzc5Hy9whv@takluz-tts.y1hqc.mongodb.net/?retryWrites=true&w=majority&appName=takluz-tts"
+		opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
+
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		mongoClient, err := mongo.Connect(ctx, opts)
+		if err != nil {
+			panic(err)
 		}
-	}()
+		defer func() {
+			if err = mongoClient.Disconnect(context.TODO()); err != nil {
+				log.Println(err.Error())
+			}
+		}()
 
-	err = mongoClient.Ping(ctx, nil)
-	if err != nil {
-		log.Println(err.Error())
-	} else {
-		fmt.Println("Successfully connected to MongoDB")
+		err = mongoClient.Ping(ctx, nil)
+		if err != nil {
+			log.Println(err.Error())
+		} else {
+			fmt.Println("Successfully connected to MongoDB")
+		}
+
+		database := mongoClient.Database("takluz")
+		collection = database.Collection("takluz-tts")
 	}
-
-	database := mongoClient.Database("takluz")
-	collection := database.Collection("takluz-tts")
 
 	command.CreateSilentAudio()
 
@@ -172,7 +196,19 @@ func main() {
 		return c.Next()
 	})
 
-	app.Post("/open_ai/:id", func(c *fiber.Ctx) error {
+	startPostJobWorker()
+
+	// Helper to wrap POST handlers into the queue
+	wrapPost := func(handler func(*fiber.Ctx) error) fiber.Handler {
+		return func(c *fiber.Ctx) error {
+			result := make(chan error)
+			postJobQueue <- PostJob{Ctx: c, Handler: handler, Result: result}
+			err := <-result
+			return err
+		}
+	}
+
+	app.Post("/open_ai/:id", wrapPost(func(c *fiber.Ctx) error {
 		id := c.Params("id")
 		Open_AI_Config, err := cfg.InitOpenAIConfig()
 		if id == "default" {
@@ -198,9 +234,12 @@ func main() {
 			Timestamp: time.Now(),
 		}
 
-		_, err = collection.InsertOne(ctx, msgCollectoin)
-		if err != nil {
-			log.Println("Error inserting message into collection:", err)
+		// Use the correct context for MongoDB insert
+		if General_Config.DataCollect && collection != nil {
+			_, err = collection.InsertOne(context.TODO(), msgCollectoin)
+			if err != nil {
+				log.Println("Error inserting message into collection:", err)
+			}
 		}
 		err = sound.GetSoundOpenAI(message.Message, Open_AI_Config, id, "speech.wav")
 		if err != nil {
@@ -218,9 +257,9 @@ func main() {
 
 		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message, "with ID:", id)
 		return c.Status(200).SendString(fmt.Sprintf("Message: %s, ID: %s", message.Message, id))
-	})
+	}))
 
-	app.Post("/bot_noi", func(c *fiber.Ctx) error {
+	app.Post("/bot_noi", wrapPost(func(c *fiber.Ctx) error {
 		BOT_NOI_Config, err := cfg.InitBotNoiConfig()
 		if err != nil {
 			log.Println(err)
@@ -244,9 +283,9 @@ func main() {
 
 		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
 		return c.Status(200).SendString(message.Message)
-	})
+	}))
 
-	app.Post("/resemble", func(c *fiber.Ctx) error {
+	app.Post("/resemble", wrapPost(func(c *fiber.Ctx) error {
 		Resemble_config, err := cfg.InitResembleConfig()
 		if err != nil {
 			log.Println(err)
@@ -277,9 +316,9 @@ func main() {
 
 		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
 		return c.Status(200).SendString(message.Message)
-	})
+	}))
 
-	app.Post("/azure", func(c *fiber.Ctx) error {
+	app.Post("/azure", wrapPost(func(c *fiber.Ctx) error {
 		Microsoft_Config, err := cfg.InitMicrosoftConfig()
 		if err != nil {
 			log.Println(err)
@@ -303,9 +342,9 @@ func main() {
 
 		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
 		return c.Status(200).SendString(message.Message)
-	})
+	}))
 
-	app.Post("/google", func(c *fiber.Ctx) error {
+	app.Post("/google", wrapPost(func(c *fiber.Ctx) error {
 		Google_Config, err := cfg.InitGoogleConfig()
 		if err != nil {
 			log.Println(err)
@@ -329,7 +368,7 @@ func main() {
 
 		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
 		return c.Status(200).SendString(message.Message)
-	})
+	}))
 
 	err = app.Listen("localhost:4444")
 	if err != nil {

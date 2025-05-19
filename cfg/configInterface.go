@@ -3,7 +3,7 @@ package config
 type Open_AI_Config struct {
 	Key            string                    `json:"key"`
 	Model          string                    `json:"model"`
-	Speed          string                    `json:"speed"`
+	Speed          float64                   `json:"speed"`
 	Voice          string                    `json:"voice"`
 	InstructionSet map[string]InstructionSet `json:"instruction_set"`
 }
@@ -55,7 +55,8 @@ type Google_Config struct {
 
 type General_Config struct {
 	// AI         string `json:"ai"`
-	LimitToken int    `json:"limit_token"`
-	TimeLimit  int    `json:"time_limit"`
-	Player     string `json:"player"`
+	LimitToken  int    `json:"limit_token"`
+	TimeLimit   int    `json:"time_limit"`
+	Player      string `json:"player"`
+	DataCollect bool   `json:"data_collect"`
 }

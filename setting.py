@@ -132,7 +132,7 @@ class ConfigGUI(customtkinter.CTk):
                         entry = customtkinter.CTkEntry(self.content_frame)  # Regular entry if no options
                         entry.insert(0, value)
                 elif key.upper() == 'MODEL':
-                    options = ["tts-1-hd", "tts-1"]
+                    options = ["tts-1-hd", "tts-1", "gpt-4o-mini-tts"]
                     entry = customtkinter.CTkComboBox(self.content_frame, values=options)
                     entry.set(value if value in options else options[0])  # Set to value, or first option if invalid
                 elif key.upper() == 'SAVE_FILE':

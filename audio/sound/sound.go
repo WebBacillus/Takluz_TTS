@@ -29,7 +29,7 @@ func GetSoundOpenAI(message string, Open_AI_Config cfg.Open_AI_Config, id string
 	voice := Open_AI_Config.InstructionSet[id].Voice
 	instruction := Open_AI_Config.InstructionSet[id].Instruction
 
-	body := map[string]string{
+	body := map[string]any{
 		"model":           Open_AI_Config.Model,
 		"input":           message,
 		"speed":           Open_AI_Config.Speed,

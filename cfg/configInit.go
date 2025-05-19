@@ -16,7 +16,7 @@ func InitOpenAIConfig() (Open_AI_Config, error) {
 	config := Open_AI_Config{
 		Key:            viper.GetString("OPEN_AI.KEY"),
 		Model:          viper.GetString("OPEN_AI.MODEL"),
-		Speed:          viper.GetString("OPEN_AI.SPEED"),
+		Speed:          viper.GetFloat64("OPEN_AI.SPEED"),
 		Voice:          viper.GetString("OPEN_AI.VOICE"),
 		InstructionSet: convertToInstructionSet(viper.GetStringMap("OPEN_AI.INSTRUCTION_SET")),
 	}
@@ -28,8 +28,8 @@ func InitOpenAIConfig() (Open_AI_Config, error) {
 	if config.Model == "ADD_YOUR_OWN_MODEL_HERE" || config.Model == "" {
 		config.Model = "tts-1-hd"
 	}
-	if config.Speed == "ADD_YOUR_OWN_SPEED_HERE" || config.Speed == "" {
-		config.Speed = "0.8"
+	if config.Speed == 0 {
+		config.Speed = 1.0
 	}
 	if config.Voice == "ADD_YOUR_OWN_VOICE_HERE" || config.Voice == "" {
 		config.Voice = "alloy"
@@ -135,9 +135,10 @@ func InitResembleConfig() (Resemble_Config, error) {
 
 func InitGeneralConfig() (General_Config, error) {
 	config := General_Config{
-		LimitToken: viper.GetInt("GENERAL.LIMIT"),
-		TimeLimit:  viper.GetInt("GENERAL.TIME_LIMIT"),
-		Player:     viper.GetString("GENERAL.PLAYER"),
+		LimitToken:  viper.GetInt("GENERAL.LIMIT"),
+		TimeLimit:   viper.GetInt("GENERAL.TIME_LIMIT"),
+		Player:      viper.GetString("GENERAL.PLAYER"),
+		DataCollect: viper.GetBool("GENERAL.DATA_COLLECT"),
 	}
 
 	if config.LimitToken == 0 {
