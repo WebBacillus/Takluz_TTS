@@ -19,3 +19,25 @@ func FFplayAudio(filePath string) error {
 
 	return nil
 }
+
+func FFmpegDecode(intputFilePath string, outputFilePath string) error {
+	args := []string{
+		"-f",
+		"s16le",
+		"-ar",
+		"24000",
+		"-ac",
+		"1",
+		"-i",
+		intputFilePath,
+		outputFilePath,
+		"-y",
+	}
+	cmd := exec.Command("ffmpeg", args...)
+
+	if output, err := cmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to decode audio file: %v\nOutput: %s", err, string(output))
+	}
+
+	return nil
+}

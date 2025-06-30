@@ -46,11 +46,12 @@ type Microsoft_Config struct {
 }
 
 type Google_Config struct {
-	Key          string  `json:"key"`
-	Name         string  `json:"name"`
-	SpeakingRate float64 `json:"speaking_rate"`
-	Pitch        float64 `json:"pitch"`
-	VolumeGainDb float64 `json:"volume_gain_db"`
+	Key            string                    `json:"key"`
+	Model          string                    `json:"model"`
+	SpeakingRate   float64                   `json:"speaking_rate"`
+	Pitch          float64                   `json:"pitch"`
+	VolumeGainDb   float64                   `json:"volume_gain_db"`
+	InstructionSet map[string]InstructionSet `json:"instruction_set"`
 }
 
 type General_Config struct {

@@ -256,6 +256,33 @@ func main() {
 		return c.Status(200).SendString(fmt.Sprintf("Message: %s, ID: %s", message.Message, id))
 	}))
 
+	app.Post("/google/:id", wrapPost(func(c *fiber.Ctx) error {
+		id := c.Params("id")
+		Google_Config, err := cfg.InitGoogleConfig()
+		if err != nil {
+			log.Println(err)
+			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		}
+
+		message := c.Locals("message").(Message)
+		err = sound.GetSoundGoogle(message.Message, Google_Config, id, "speech.wav")
+		if err != nil {
+			log.Println(err)
+		}
+
+		if General_Config.Player == "OBS" {
+			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.wav"))
+		} else if General_Config.Player == "FFPLAY" {
+			err = sound.FFplayAudio(getPath("speech.wav"))
+		}
+		if err != nil {
+			log.Println(err)
+		}
+
+		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
+		return c.Status(200).SendString(message.Message)
+	}))
+
 	app.Post("/bot_noi", wrapPost(func(c *fiber.Ctx) error {
 		BOT_NOI_Config, err := cfg.InitBotNoiConfig()
 		if err != nil {
@@ -324,32 +351,6 @@ func main() {
 
 		message := c.Locals("message").(Message)
 		err = sound.GetSoundAzure(message.Message, Microsoft_Config, "speech.wav")
-		if err != nil {
-			log.Println(err)
-		}
-
-		if General_Config.Player == "OBS" {
-			err = sound.ObsPlaySound(goobsClient, OBS_Config.Media, General_Config.TimeLimit, getPath("speech.wav"))
-		} else if General_Config.Player == "FFPLAY" {
-			err = sound.FFplayAudio(getPath("speech.wav"))
-		}
-		if err != nil {
-			log.Println(err)
-		}
-
-		fmt.Println(color.GreenString(message.UserName), "used", color.RedString(fmt.Sprintf("%d", len(message.Message))), "characters", message.Message)
-		return c.Status(200).SendString(message.Message)
-	}))
-
-	app.Post("/google", wrapPost(func(c *fiber.Ctx) error {
-		Google_Config, err := cfg.InitGoogleConfig()
-		if err != nil {
-			log.Println(err)
-			return c.Status(500).JSON(fiber.Map{"error": err.Error()})
-		}
-
-		message := c.Locals("message").(Message)
-		err = sound.GetSoundGoogle(message.Message, Google_Config, "speech.wav")
 		if err != nil {
 			log.Println(err)
 		}

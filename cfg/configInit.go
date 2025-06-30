@@ -180,19 +180,21 @@ func InitMicrosoftConfig() (Microsoft_Config, error) {
 
 func InitGoogleConfig() (Google_Config, error) {
 	config := Google_Config{
-		Key:          viper.GetString("GOOGLE.KEY"),
-		Name:         viper.GetString("GOOGLE.NAME"),
-		SpeakingRate: viper.GetFloat64("GOOGLE.SPEAKING_RATE"),
-		Pitch:        viper.GetFloat64("GOOGLE.PITCH"),
-		VolumeGainDb: viper.GetFloat64("GOOGLE.VOLUME_GAIN_DB"),
+		Key:            viper.GetString("GOOGLE.KEY"),
+		Model:          viper.GetString("GOOGLE.MODEL"),
+		SpeakingRate:   viper.GetFloat64("GOOGLE.SPEAKING_RATE"),
+		Pitch:          viper.GetFloat64("GOOGLE.PITCH"),
+		VolumeGainDb:   viper.GetFloat64("GOOGLE.VOLUME_GAIN_DB"),
+		InstructionSet: convertToInstructionSet(viper.GetStringMap("GOOGLE.INSTRUCTION_SET")),
 	}
+	viper.UnmarshalKey("GOOGLE.INSTRUCTION_SET", &config.InstructionSet)
 
-	if config.Name == "ADD_YOUR_OWN_KEY_HERE" || config.Name == "" {
+	if config.Key == "ADD_YOUR_OWN_KEY_HERE" || config.Key == "" {
 		return config, fmt.Errorf("GOOGLE.KEY is required")
 	}
 
-	if config.Name == "ADD_YOUR_OWN_NAME_HERE" || config.Name == "" {
-		return config, fmt.Errorf("GOOGLE.NAME is required")
+	if config.Model == "ADD_YOUR_OWN_Model_HERE" || config.Model == "" {
+		return config, fmt.Errorf("GOOGLE.MODEL is required")
 	}
 	if config.SpeakingRate == 0 {
 		config.SpeakingRate = 1.0

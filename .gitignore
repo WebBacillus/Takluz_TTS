@@ -2,6 +2,7 @@
 
 /*.mp3
 /*.wav
+/*.pcm
 
 /config.yaml
 Takluz_TTS_Application/speech.*
