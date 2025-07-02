@@ -1,63 +1,68 @@
 package config
 
 type Open_AI_Config struct {
-	Key            string                    `json:"key"`
-	Model          string                    `json:"model"`
-	Speed          float64                   `json:"speed"`
-	Voice          string                    `json:"voice"`
-	InstructionSet map[string]InstructionSet `json:"instruction_set"`
+	Key            string                    `yaml:"KEY"`
+	Model          string                    `yaml:"MODEL"`
+	Speed          float64                   `yaml:"SPEED"`
+	Voice          string                    `yaml:"VOICE"`
+	InstructionSet map[string]InstructionSet `yaml:"INSTRUCTION_SET"`
 }
 
 type InstructionSet struct {
-	Voice       string `json:"voice"`
-	Instruction string `json:"instruction"`
+	Voice       string `yaml:"VOICE"`
+	Instruction string `yaml:"INSTRUCTION"`
+}
+
+type CharacterProfile struct {
+	Voice       string `yaml:"VOICE"`
+	Instruction string `yaml:"INSTRUCTION"`
 }
 
 type OBS_Config struct {
-	URL     string `json:"url"`
-	Key     string `json:"key"`
-	Browser string `json:"browser"`
-	Media   string `json:"media"`
+	URL     string `yaml:"url"`
+	Key     string `yaml:"key"`
+	Browser string `yaml:"browser"`
+	Media   string `yaml:"media"`
 }
 
 type BOT_NOI_Config struct {
-	Key       string  `json:"key"`
-	Speaker   string  `json:"speaker"`
-	Volume    float64 `json:"volume"`
-	Speed     float64 `json:"speed"`
-	TypeMedia string  `json:"type_media"`
-	SaveFile  bool    `json:"save_file"`
-	Language  string  `json:"language"`
+	Key       string  `yaml:"key"`
+	Speaker   string  `yaml:"speaker"`
+	Volume    float64 `yaml:"volume"`
+	Speed     float64 `yaml:"speed"`
+	TypeMedia string  `yaml:"type_media"`
+	SaveFile  bool    `yaml:"save_file"`
+	Language  string  `yaml:"language"`
 }
 
 type Resemble_Config struct {
-	Key          string `json:"key"`
-	VoiceUUID    string `json:"voice_uuid"`
-	SampleRate   int    `json:"sample_rate"`
-	OutputFormat string `json:"output_format"`
-	Speed        string `json:"speed"`
+	Key          string `yaml:"key"`
+	VoiceUUID    string `yaml:"voice_uuid"`
+	SampleRate   int    `yaml:"sample_rate"`
+	OutputFormat string `yaml:"output_format"`
+	Speed        string `yaml:"speed"`
 }
 
 type Microsoft_Config struct {
-	Key    string `json:"key"`
-	Region string `json:"region"`
-	Voice  string `json:"voice"`
-	Speed  string `json:"speed"`
+	Key    string `yaml:"key"`
+	Region string `yaml:"region"`
+	Voice  string `yaml:"voice"`
+	Speed  string `yaml:"speed"`
 }
 
 type Google_Config struct {
-	Key            string                    `json:"key"`
-	Model          string                    `json:"model"`
-	SpeakingRate   float64                   `json:"speaking_rate"`
-	Pitch          float64                   `json:"pitch"`
-	VolumeGainDb   float64                   `json:"volume_gain_db"`
-	InstructionSet map[string]InstructionSet `json:"instruction_set"`
+	Key          string  `yaml:"key"`
+	Model        string  `yaml:"model"`
+	SpeakingRate float64 `yaml:"speaking_rate"`
+	Pitch        float64 `yaml:"pitch"`
+	VolumeGainDb float64 `yaml:"volume_gain_db"`
+	// GoogleInstructionSet GoogleInstructionSet
 }
 
 type General_Config struct {
-	// AI         string `json:"ai"`
-	LimitToken int    `json:"limit_token"`
-	TimeLimit  int    `json:"time_limit"`
-	Player     string `json:"player"`
-	MongoDBKey string `json:"mongo_db_key"`
+	// AI         string `yaml:"ai"`
+	LimitToken int    `yaml:"limit_token"`
+	TimeLimit  int    `yaml:"time_limit"`
+	Player     string `yaml:"player"`
+	MongoDBKey string `yaml:"mongo_db_key"`
 }

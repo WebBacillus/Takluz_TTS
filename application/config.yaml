@@ -75,52 +75,6 @@ GOOGLE:
   PITCH: '0.0'
   SPEAKING_RATE: '0.5'
   VOLUME_GAIN_DB: '0.0'
-  INSTRUCTION_SET:
-      DEFAULT:
-          VOICE: Zephyr
-      GRAND_MA:
-          VOICE: Sulafat
-          INSTRUCTION: |
-                Voice Style Prompt: Isaan Grandma (Elderly and Frail)
-                Overall Impression: Gentle, kind, and knowledgeable, but the voice should be faint and convey a slight fatigue, as if speaking requires effort. The voice should still offer warmth, but a more subdued, weakened kind of warmth.
-                Key Characteristics:
-                Pace: slow, deliberate. There may be slightly  silent periods between sentences or phrases.
-                Pitch: Mid to low. Faint and slightly tremulous. May have some audible breathiness or an airy quality. Should not be high-pitched or sharp.
-                Tone:
-                Weak/Fatigued: Clearly convey a weak and tired tone.
-                Faint/Subdued: The voice will be faint and subdued, not resonant or clearly loud.
-                Kind/Warm: Still retains kindness and warmth, but expressed through a gentle, fragile delivery.
-                Knowledgeable: Still holds an essence of wisdom and life experience, but conveyed slowly and with minimal energy.
-                Articulation: Less distinct than before. Some words may be mumbled, swallowed, or trail off, sounding incomplete due to overall weakness.
-                Isaan Language Influence:
-                Rhythm and Melody: Still retains the inherent rhythm and melody of the Isaan language, but significantly slowed down and softened.
-                Ending Particles: The use of common Isaan ending particles like "เด้อ" (der), "น้อ" (nor), "แท้" (tae) will still be present, but pronounced softly and languidly.
-                Vowels: The pronunciation of Isaan vowels and consonants may sound less full or have more breathiness than typical.
-                Breathing: There may be slightly more audible breaths, or breathing that sounds effortful before speaking.
-                Vocal Texture: Should have a noticeably raspy, husky, or breathy quality, clearly indicating age and diminished strength. It should not sound clear, crisp, or strong.
-                What to Avoid:
-                Fast or rushed speaking.
-                Loud, resonant, or high-energy vocal delivery.
-                A harsh or commanding voice.
-                Overly clear or professional articulation, like a newscaster.
-                Overall Goal:
-                When hearing this voice, the listener should feel as if they are sitting beside a very elderly grandma. She is telling a story or conversing softly, requiring noticeable effort for each word, as if she is resting and slowly sharing her thoughts.
-      KID: 
-          VOICE: Rasalgethi
-          INSTRUCTION: |
-              Delivery: Fast, playful, and messy. Words come out in excited bursts with sudden loud squeals. Words with "!" are shouted in sharp, squeaky yells.
-              Voice: Very high-pitched and childish, like a 7-year-old yelling while gaming. Sounds whiny, hyper, and mischievous.
-              Tone: Silly, bratty, and loud—like a kid being annoying on purpose. Full of energy, teasing, and random yelling.
-              Pronunciation: Sloppy, with stretched vowels and mispronounced words. "Nooo!", "mine!", and "stooop!" are screamed with shrill force.
-              Volume/Force Direction: Unpredictable—quiet babble one second, then high-pitched shrieks on "!" that pierce the ears.
-      GIRL:
-          VOICE: Despina
-          INSTRUCTION: |
-              Affect/Accent: Sultry and inviting, with a playful, slightly breathy quality. Voice should have a warm, slightly lower register, but with the ability to lilt upwards on teases or compliments. Imagine a subtle, knowing smile always present in the voice.
-              Tone: Flirtatious, confident, yet with an undercurrent of genuine interest and admiration. Teasing but warm, conveying that he is the focus of her attention and desire. Avoid sounding desperate; aim for captivating.
-              Pacing: Deliberate and enticing; slightly slower than normal conversation to build anticipation, with playful hesitations or drawn-out syllables on key words. Allow for moments of suggestive silence.
-              Emotion: A blend of playful confidence, allure, intrigue, and clear attraction. The voice should sound like she's enjoying herself and finds him genuinely captivating. There's a hint of "I know what I want, and it might be you."
-              Pronunciation: Clear, but with a soft, rounded quality to the words. Emphasize words that convey 
 
 GENERAL:
   LIMIT: 300
