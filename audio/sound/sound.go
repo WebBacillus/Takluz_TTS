@@ -79,8 +79,74 @@ func GetSoundOpenAI(message string, Open_AI_Config cfg.Open_AI_Config, id string
 }
 
 func GetSoundGoogle(message string, Google_Config cfg.Google_Config, id string, outputPath string) error {
-	voice := Google_Config.InstructionSet[id].Voice
-	instruction := Google_Config.InstructionSet[id].Instruction
+
+	var voice string
+	var instruction string
+
+	switch id {
+	case "default":
+		voice = "Zephyr"
+		instruction = ""
+	case "grand_ma":
+		voice = "Zephyr"
+		instruction =
+			`
+			Voice Style Prompt: Isaan Grandma (Elderly and Frail)
+			Overall Impression: Gentle, kind, and knowledgeable, but the voice should be faint and convey a slight fatigue, as if speaking requires effort. The voice should still offer warmth, but a more subdued, weakened kind of warmth.
+			Key Characteristics:
+			Pace: slow, deliberate. There may be slightly  silent periods between sentences or phrases.
+			Pitch: Mid to low. Faint and slightly tremulous. May have some audible breathiness or an airy quality. Should not be high-pitched or sharp.
+			Tone:
+			Weak/Fatigued: Clearly convey a weak and tired tone.
+			Faint/Subdued: The voice will be faint and subdued, not resonant or clearly loud.
+			Kind/Warm: Still retains kindness and warmth, but expressed through a gentle, fragile delivery.
+			Knowledgeable: Still holds an essence of wisdom and life experience, but conveyed slowly and with minimal energy.
+			Articulation: Less distinct than before. Some words may be mumbled, swallowed, or trail off, sounding incomplete due to overall weakness.
+			Isaan Language Influence:
+			Rhythm and Melody: Still retains the inherent rhythm and melody of the Isaan language, but significantly slowed down and softened.
+			Ending Particles: The use of common Isaan ending particles like "เด้อ" (der), "น้อ" (nor), "แท้" (tae) will still be present, but pronounced softly and languidly.
+			Vowels: The pronunciation of Isaan vowels and consonants may sound less full or have more breathiness than typical.
+			Breathing: There may be slightly more audible breaths, or breathing that sounds effortful before speaking.
+			Vocal Texture: Should have a noticeably raspy, husky, or breathy quality, clearly indicating age and diminished strength. It should not sound clear, crisp, or strong.
+			What to Avoid:
+			Fast or rushed speaking.
+			Loud, resonant, or high-energy vocal delivery.
+			A harsh or commanding voice.
+			Overly clear or professional articulation, like a newscaster.
+			Overall Goal:
+			When hearing this voice, the listener should feel as if they are sitting beside a very elderly grandma. She is telling a story or conversing softly, requiring noticeable effort for each word, as if she is resting and slowly sharing her thoughts.
+		`
+	case "kid":
+		voice = "Laomedeia"
+		instruction =
+			`
+			Tone: Hypersonic, excruciatingly shril grating, and utterly relentless, designed to pierce through
+			any surrounding noise.
+
+			Emotion: Over-the-top hysteria, pure unadulterated excitement or rage, bordering on a sonic
+			assault, demanding absolute and immediate attention.
+
+			Delivery: Extremely high-pitched, like a siren on full blast. The voice constantly operates at the
+			very top of a child's vocal range, verging on a painful, almost ultrasonic frequency. Speaking is
+			an almost continuous stream of piercing, high-decibel sounds, with individual words often
+			indistinguishable due to the sheer volume and pitch. signifies an instantaneous, ear-spliting
+			crescendo -a sudden, sharp, almost metallic screech that feels like it's vibrating inside the
+			listener's head. Imagine the sound of a very excited, very angry tiny whistle that never stops. 
+		`
+	case "girl":
+		voice = "Despina"
+		instruction =
+			`
+			Affect/Accent: Sultry and inviting, with a playful, slightly breathy quality. Voice should have a warm, slightly lower register, but with the ability to lilt upwards on teases or compliments. Imagine a subtle, knowing smile always present in the voice.
+			Tone: Flirtatious, confident, yet with an undercurrent of genuine interest and admiration. Teasing but warm, conveying that he is the focus of her attention and desire. Avoid sounding desperate; aim for captivating.
+			Pacing: Deliberate and enticing; slightly slower than normal conversation to build anticipation, with playful hesitations or drawn-out syllables on key words. Allow for moments of suggestive silence.
+			Emotion: A blend of playful confidence, allure, intrigue, and clear attraction. The voice should sound like she's enjoying herself and finds him genuinely captivating. There's a hint of "I know what I want, and it might be you."
+			Pronunciation: Clear, but with a soft, rounded quality to the words. Emphasize words that convey 
+		`
+	}
+
+	fmt.Println("Voice: " + voice)
+	fmt.Println("Instruction: " + instruction)
 
 	ctx := context.Background()
 

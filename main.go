@@ -257,7 +257,7 @@ func main() {
 	}))
 
 	app.Post("/google/:id", wrapPost(func(c *fiber.Ctx) error {
-		id := c.Params("id")
+		id := strings.ToLower(c.Params("id"))
 		Google_Config, err := cfg.InitGoogleConfig()
 		if err != nil {
 			log.Println(err)

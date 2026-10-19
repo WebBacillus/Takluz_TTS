@@ -179,15 +179,16 @@ func InitMicrosoftConfig() (Microsoft_Config, error) {
 }
 
 func InitGoogleConfig() (Google_Config, error) {
+	// googleInstructionset := InitGoogleInstruction()
+
 	config := Google_Config{
-		Key:            viper.GetString("GOOGLE.KEY"),
-		Model:          viper.GetString("GOOGLE.MODEL"),
-		SpeakingRate:   viper.GetFloat64("GOOGLE.SPEAKING_RATE"),
-		Pitch:          viper.GetFloat64("GOOGLE.PITCH"),
-		VolumeGainDb:   viper.GetFloat64("GOOGLE.VOLUME_GAIN_DB"),
-		InstructionSet: convertToInstructionSet(viper.GetStringMap("GOOGLE.INSTRUCTION_SET")),
+		Key:          viper.GetString("GOOGLE.KEY"),
+		Model:        viper.GetString("GOOGLE.MODEL"),
+		SpeakingRate: viper.GetFloat64("GOOGLE.SPEAKING_RATE"),
+		Pitch:        viper.GetFloat64("GOOGLE.PITCH"),
+		VolumeGainDb: viper.GetFloat64("GOOGLE.VOLUME_GAIN_DB"),
+		// GoogleInstructionSet: googleInstructionset,
 	}
-	viper.UnmarshalKey("GOOGLE.INSTRUCTION_SET", &config.InstructionSet)
 
 	if config.Key == "ADD_YOUR_OWN_KEY_HERE" || config.Key == "" {
 		return config, fmt.Errorf("GOOGLE.KEY is required")
@@ -208,3 +209,26 @@ func InitGoogleConfig() (Google_Config, error) {
 
 	return config, nil
 }
+
+// func InitGoogleInstruction() GoogleInstructionSet {
+// 	config := GoogleInstructionSet{
+// 		Default: CharacterProfile{
+// 			Voice:       viper.GetString("DEFAULT.VOICE"),
+// 			Instruction: viper.GetString("DEFAULT.INSTRUCTION"),
+// 		},
+// 		GrandMa: CharacterProfile{
+// 			Voice:       viper.GetString("GRAND_MA.VOICE"),
+// 			Instruction: viper.GetString("DEFAULT.INSTRUCTION"),
+// 		},
+// 		Kid: CharacterProfile{
+// 			Voice:       viper.GetString("KID.VOICE"),
+// 			Instruction: viper.GetString("DEFAULT.INSTRUCTION"),
+// 		},
+// 		Girl: CharacterProfile{
+// 			Voice:       viper.GetString("GIRL.VOICE"),
+// 			Instruction: viper.GetString("DEFAULT.INSTRUCTION"),
+// 		},
+// 	}
+
+// 	return config
+// }

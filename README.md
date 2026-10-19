@@ -25,29 +25,9 @@ Takluz_TTS turns Twitch channel-point redemptions and chat commands into spoken 
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    subgraph local["Streamer PC (local)"]
-        direction TB
-        SAMMI["SAMMI Core<br/>Twitch ↔ HTTP bridge"]
-        Bot["Takluz_TTS Bot<br/>Go + Fiber<br/>:4444"]
-        OBS["OBS Studio<br/>WebSocket"]
-    end
-
-    subgraph cloud["Cloud Services"]
-        direction TB
-        TTS["TTS Engine<br/>OpenAI · Google<br/>Azure · Botnoi · Resemble"]
-        DB[("MongoDB Atlas<br/>request log")]
-    end
-
-    Twitch["Twitch Chat<br/>& Channel Points"] --> SAMMI
-    SAMMI -->|POST JSON<br/>userName, message| Bot
-    Bot -->|HTTPS synthesize| TTS
-    TTS -->|audio bytes| Bot
-    Bot -->|play media| OBS
-    OBS -->|stream| Twitch
-    Bot -->|log| DB
-```
+<p align="center">
+  <img src="resource/architecture.png" alt="Architecture: Twitch → SAMMI → Takluz_TTS Bot → TTS Engine → OBS, with MongoDB Atlas logging"/>
+</p>
 
 ## Why this exists
 
