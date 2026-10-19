@@ -1,111 +1,73 @@
 # Takluz_TTS
 
-Takluz TTS is a project designed to enhance the Twitch streaming experience by leveraging OpenAI's Text-to-Speech (TTS) model. Instead of relying on the standard bit and donation triggers for TTS, Takluz TTS introduces a points-based system, allowing viewers to redeem channel points for access to a wider variety of voices and potentially more engaging TTS interactions. This approach aims to offer a more diverse and rewarding TTS experience compared to traditional Twitch TTS implementations, incentivizing viewer engagement and providing streamers with more creative control over their audio interactions.
+<p align="center">
+  <img src="resource/banner.png" alt="Takluz_TTS — voice on stream without Bits"/>
+</p>
 
-## Application examples
-* **TURN ON AUDIO FIRST**
+<p align="left">
+  <img src="https://img.shields.io/badge/Go-1.23-00ADD8?logo=go&logoColor=white" alt="Go"/>
+  <img src="https://img.shields.io/badge/Fiber-v2-00ADD8" alt="Fiber"/>
+  <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white" alt="MongoDB"/>
+  <img src="https://img.shields.io/badge/OBS-WebSocket-302EBA" alt="OBS"/>
+  <img src="https://img.shields.io/badge/SAMMI-Core-orange" alt="SAMMI"/>
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License"/>
+</p>
 
-https://github.com/user-attachments/assets/a13dec69-70a5-4600-8870-987a531c1613
+> Twitch channel-points TTS bot — gives high-loyalty viewers the same voice on stream as Bits donors, no payment required.
 
-Full Clip [Here](https://www.twitch.tv/takluz/clip/FaintMiniatureTrayWow-TYVUjG5PHFksa8i0)
+## What it is
 
-https://github.com/user-attachments/assets/3f445c20-90ca-4086-b9a4-b0148171c0b2
+Takluz_TTS turns Twitch channel-point redemptions and chat commands into spoken audio on stream — **Bits not required**. It bridges [SAMMI Core](https://sammi.solutions/) to five pluggable TTS engines (OpenAI, Google Cloud, Azure, Botnoi, Resemble AI) and plays the synthesized audio through OBS Studio's media controls, all from a Windows PC.
 
-Full Clip [Here](https://www.twitch.tv/takluz/clip/CorrectEvilButterPogChamp-PmfPRK0Lz6-wpMai)
+## Demo
 
+![Demo clip 1](https://github.com/user-attachments/assets/a13dec69-70a5-4600-8870-987a531c1613)
 
+## Architecture
 
-https://github.com/user-attachments/assets/54fcacc3-e1c5-4de3-a242-0351ea7c62f9
+<p align="center">
+  <img src="resource/architecture.png" alt="Architecture: Twitch → SAMMI → Takluz_TTS Bot → TTS Engine → OBS, with MongoDB Atlas logging"/>
+</p>
 
-Full Clip [Here](https://www.twitch.tv/videos/2404580110?t=1h44m5s)
+## Why this exists
 
+Off-the-shelf Twitch TTS bots gate voices behind Bits — paying for voice time. That ties participation to wallet, not engagement. A viewer who's been in chat for 200 days earns the same voice slot as someone who tipped once.
 
-## Usage
+Takluz_TTS swaps Bits for **channel points** — Twitch-native currency every viewer already earns for free, just by being active. Now the high-loyalty viewer who never tips can speak on stream exactly like the big tipper. Streamer pays nothing extra; the platform's own engagement metrics decide who talks.
 
-**1. Prerequisites:**
+## Tech stack
 
-*   **SAMMI Core:** Download and install the latest version of SAMMI Core from the official website.  SAMMI is the core application that will handle the connection between Twitch, your TTS engine, and OBS Studio.
-*   **OBS Studio:** Ensure you have OBS Studio installed and configured for streaming.
-*  **A Twitch account:** obviously you will need an account.
-*   **A TTS Engine Account:** You'll need an account and API key/credentials for your chosen TTS engine (OpenAI, Azure, Botnoi, or Resemble AI).  Each engine has its own setup process. See "Supported TTS Engines" below for more details.
+- **Go 1.23** + Fiber v2 — HTTP server on `localhost:4444`
+- **SAMMI Core** — Twitch ↔ HTTP bridge (handles channel points + chat commands)
+- **OBS WebSocket** (`andreykaipov/goobs`) — plays synthesized audio into the stream
+- **MongoDB Atlas** — logs every request for moderation
+- **PyInstaller** — `setting.exe` config GUI for credentials and OBS password
 
-**2. SAMMI Setup:**
+## Quickstart
 
-*   **Connect SAMMI to Twitch:**
-    *   Open SAMMI Core.
-    *   Follow the on-screen instructions or SAMMI's documentation to connect your Twitch account.  This usually involves authorizing SAMMI to access your Twitch account.
+1. Install [SAMMI Core](https://sammi.solutions/) and [OBS Studio](https://obsproject.com/).
+2. Enable OBS WebSocket server (Tools → WebSockets Server Settings → Enable).
+3. Run `setting.exe`, paste your TTS provider API key and OBS WebSocket password.
+4. Import the matching SAMMI deck JSON from `sammi/` (one per TTS engine).
+5. Run `takluz_tts.exe`. The bot listens on `localhost:4444`.
 
-*   **Create a New Deck:**
-    *   In SAMMI, create a new deck.  A deck is essentially a collection of buttons and commands.  You can name it something like "Takluz_TTS".
+## Supported TTS engines
 
-*   **Import Takluz_TTS Buttons:**
-    *   **Locate the JSON file:** Find the appropriate JSON file within the ![SAMMI](sammi) that corresponds to your chosen TTS engine (OpenAI, Azure, Botnoi, or Resemble AI). These JSON files contain pre-configured button layouts and commands.
-    *   **Import:** In SAMMI, within your new deck, right-click on an empty area and select "Import JSON".  Paste the contents of the JSON file you copied from the repository. This will create the necessary buttons for controlling Takluz_TTS.
-    *   ![](resource/sammi1.png)
+| Engine | Strongest for | Notes |
+|---|---|---|
+| OpenAI | English, high quality | `tts-1` / `gpt-4o-mini-tts` |
+| Google Cloud | Wide language coverage | Multi-voice |
+| Botnoi | Thai pronunciation | Local speech team |
+| Azure | Enterprise reliability | SSML support |
+| Resemble AI | Custom cloned voices | Voice UUID required |
 
-**3. Configure Takluz_TTS Settings (setting.exe):**
+## Design choices worth flagging
 
-*   **Open `setting.exe`:**  Locate and run the `setting.exe` file provided with Takluz_TTS. This application allows you to configure the connection to your chosen TTS engine and OBS.
-
-*   **TTS Engine Configuration:**
-    *   In `setting.exe`, find the button corresponding to your preferred TTS engine (e.g., "OpenAI", "Azure").
-    *   Click the button.
-    *   A field will appear where you should paste your API key, secret key, or other required credentials for that specific TTS engine.  Make sure you have obtained these credentials from the TTS provider's website.
-
-**4. OBS Studio Integration:**
-
-*   **Enable WebSocket Server:**
-    *   In OBS Studio, go to "Tools" in the menu bar.
-    *   Select "WebSockets Server Settings".
-    *   Make sure the "Enable WebSockets server" checkbox is checked.  You may need to install the OBS Websocket plugin if it's not already installed.
-* **Get the Server Password:**
-    * In the same "WebSockets Server Settings" window, click the "Show Connect Info" button.
-    * Copy the "Server Password" from this dialog.
-     ![](resource/obs1.png)
-
-*  **Configure OBS in `setting.exe`:**
-   *   Return to `setting.exe`.
-   *   Click the "OBS" button.
-   *   Paste the OBS WebSocket server password you copied into the provided field.
-
-**5. Start Takluz_TTS:**
-
-*   **Run `takluz_tts.exe`:** Locate and run the `takluz_tts.exe` file. This is the main application that handles the text-to-speech processing.
-
-**6. Using Takluz_TTS in your Stream:**
-
-*   Now, when a configured trigger occurs on your Twitch stream (e.g., a chat command, a channel point redemption – as defined in the SAMMI buttons), Takluz_TTS will:
-    1.  Receive the text from SAMMI.
-    2.  Send the text to your chosen TTS engine.
-    3.  Receive the synthesized audio.
-    4.  Play the audio through your configured audio output (which should be captured by OBS).
-
-**Supported TTS Engines:**
-
-Takluz_TTS supports the following TTS engines.  You will need to obtain API keys/credentials from each provider separately:
-
-*   **OpenAI:** Requires an OpenAI API key. You'll likely use the `tts-1` or `tts-1-hd` models. Refer to OpenAI's documentation for pricing and usage.
-*   **Azure:** Requires an Azure Speech service key and region.  Refer to Azure's documentation for setup and configuration.
-*   **Botnoi:**  Requires a Botnoi API key. Refer to Botnoi's documentation.
-*   **Resemble AI:** Requires a Resemble AI API key. Refer to Resemble AI's documentation.
-
-**Troubleshooting:**
-
-*   **No Audio:** Double-check your audio output settings in both `setting.exe` and OBS Studio. Make sure the correct audio device is selected.  Ensure the volume is turned up.
-*   **SAMMI Not Connecting:** Verify your Twitch connection in SAMMI.  Ensure you've authorized SAMMI correctly.
-*   **OBS Not Connecting:**  Confirm that the OBS WebSocket server is enabled and that you've entered the correct password in `setting.exe`.  Ensure the OBS Websocket plugin is installed and up-to-date.
-*   **TTS Engine Errors:** Check the error messages from Takluz_TTS and consult the documentation for your specific TTS engine.  Common issues include incorrect API keys, exceeding usage limits, or network connectivity problems.
-* **JSON import Error:** Make sure the selected TTS engine from setting.exe matches the TTS Engine from the downloaded JSON.
-
-**Important Considerations:**
-
-*   **API Keys:** Keep your API keys secret.  Do not share them publicly.
-*   **Usage Costs:** Be aware of the pricing and usage limits for your chosen TTS engine.  Some engines have free tiers, but exceeding those limits may incur costs.
-*   **Latency:** There may be a slight delay between the trigger and the audio playback, depending on your internet connection and the TTS engine's processing time.
-* **Ensure run as Admin** Run all related apps as an administrator can sometimes resolve the problem.
-
+- **Pluggable TTS** — adding an engine is one route handler (`/new_engine`) plus one config struct. The existing five were added without touching each other.
+- **No vendor coupling** — OBS, Twitch, and every TTS provider sit behind small interfaces (`goobs`, Fiber routes, sound package). Each can be swapped.
+- **Local-first** — the bot runs on the streamer's PC. Nothing is proxied through a third party.
+- **Channel points over Bits** — chose the Twitch-native free path over the paid path because it lowers the bar for casual viewers and rewards loyalty.
 
 ## Contact
 
-Since the installation process can be complex, you can join our Discord for guided assistance.
-[Discord](https://discord.gg/whnxWt4NKj)
+Discord: [takluz](https://discord.gg/whnxWt4NKj)
