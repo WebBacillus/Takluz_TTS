@@ -1,9 +1,5 @@
 # Takluz_TTS
 
-<p align="center">
-  <img src="resource/banner.png" alt="Takluz_TTS — voice on stream without Bits"/>
-</p>
-
 <p align="left">
   <img src="https://img.shields.io/badge/Go-1.23-00ADD8?logo=go&logoColor=white" alt="Go"/>
   <img src="https://img.shields.io/badge/Fiber-v2-00ADD8" alt="Fiber"/>
@@ -21,13 +17,50 @@ Takluz_TTS turns Twitch channel-point redemptions and chat commands into spoken 
 
 ## Demo
 
-![Demo clip 1](https://github.com/user-attachments/assets/a13dec69-70a5-4600-8870-987a531c1613)
+https://github.com/user-attachments/assets/a13dec69-70a5-4600-8870-987a531c1613
 
 ## Architecture
 
-<p align="center">
-  <img src="resource/architecture.png" alt="Architecture: Twitch → SAMMI → Takluz_TTS Bot → TTS Engine → OBS, with MongoDB Atlas logging"/>
-</p>
+```mermaid
+
+flowchart LR
+    subgraph twitch["Twitch Platform"]
+        direction TB
+        Events["Chat & Channel Points"]
+        Live["Live Stream"]
+    end
+
+    subgraph local["Streamer PC (Local)"]
+        direction TB
+        SAMMI["SAMMI Core<br/>Event Bridge"]
+        Bot["Takluz_TTS Bot<br/>Go + Fiber"]
+        OBS["OBS Studio<br/>Media Playback"]
+    end
+
+    subgraph cloud["External Cloud Services"]
+        direction TB
+
+        subgraph tts["TTS Providers"]
+            direction TB
+            OpenAI["OpenAI"]
+            Google["Google Cloud"]
+            Azure["Azure Speech"]
+            Botnoi["Botnoi Voice"]
+            Resemble["Resemble AI"]
+        end
+
+        DB[("MongoDB Atlas<br/>Request Logs")]
+    end
+
+    Events -->|Events| SAMMI
+    SAMMI -->|HTTP POST / JSON| Bot
+
+    Bot <-->|HTTPS / Audio| tts
+    Bot -->|WebSocket / Playback Control| OBS
+    OBS -->|Broadcast| Live
+
+    Bot -->|Log Requests| DB
+```
 
 ## Why this exists
 
